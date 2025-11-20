@@ -34,6 +34,12 @@ public partial class MainViewModel : ObservableRecipient
                 Type = typeof(VisibilityView),
                 Instance = new VisibilityView(),
             },
+            new()
+            {
+                Name = nameof(GridSplitterView),
+                Type = typeof(GridSplitterView),
+                Instance = new GridSplitterView(),
+            },
         ];
 
         Messenger.Register<string, string>(
