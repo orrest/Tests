@@ -40,6 +40,12 @@ public partial class MainViewModel : ObservableRecipient
                 Type = typeof(GridSplitterView),
                 Instance = new GridSplitterView(),
             },
+            new()
+            {
+                Name = nameof(CustomizedTabItemView),
+                Type = typeof(CustomizedTabItemView),
+                Instance = new CustomizedTabItemView(),
+            },
         ];
 
         Messenger.Register<string, string>(
