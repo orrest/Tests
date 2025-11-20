@@ -9,7 +9,8 @@
              d:DesignWidth="800"
              mc:Ignorable="d">
     <StackPanel>
-        <Button Command="{Binding Path=PlayCommand}" Content="Play List" />
+        <Button Command="{Binding Path=PlayCommand}" Content="Playlist Callback" />
+        <Button Command="{Binding Path=Play1Command}" Content="Playlist Async" />
         <Button Command="{Binding Path=ResetCommand}" Content="Reset" />
     </StackPanel>
 </UserControl>
