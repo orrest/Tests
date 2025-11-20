@@ -15,6 +15,10 @@
             <ColumnDefinition Width="200" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
         <ListView Grid.Column="0"
                   ItemsSource="{Binding Path=ViewItems}"
@@ -27,5 +31,7 @@
         </ListView>
 
         <ContentControl Grid.Column="1" Content="{Binding SelectedView.Instance}" />
+
+        <TextBlock Grid.Row="1" Text="{Binding Path=ToastMessage}" />
     </Grid>
 </Window>

@@ -1,7 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Messaging;
+using Tests.Wpf.Medias;
 using Tests.Wpf.Models;
-using Tests.Wpf.Threadings;
 
 namespace Tests.Wpf;
 
@@ -13,8 +14,28 @@ public partial class MainViewModel : ObservableRecipient
     [ObservableProperty]
     public partial ViewItem? SelectedView { get; set; }
 
+    [ObservableProperty]
+    public partial string ToastMessage { get; set; } = string.Empty;
+
     public MainViewModel()
     {
-        ViewItems = [new() { Name = nameof(PlayerView), Type = typeof(PlayerView), Instance = new PlayerView() }];
+        ViewItems =
+        [
+            new()
+            {
+                Name = nameof(PlayerView),
+                Type = typeof(PlayerView),
+                Instance = new PlayerView(),
+            },
+        ];
+
+        Messenger.Register<string, string>(
+            this,
+            nameof(MainViewModel),
+            (r, m) =>
+            {
+                ToastMessage = m;
+            }
+        );
     }
 }
