@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
+using Tests.Wpf.Controls;
 using Tests.Wpf.Medias;
 using Tests.Wpf.Models;
 
@@ -26,6 +27,12 @@ public partial class MainViewModel : ObservableRecipient
                 Name = nameof(PlayerView),
                 Type = typeof(PlayerView),
                 Instance = new PlayerView(),
+            },
+            new()
+            {
+                Name = nameof(VisibilityView),
+                Type = typeof(VisibilityView),
+                Instance = new VisibilityView(),
             },
         ];
 
