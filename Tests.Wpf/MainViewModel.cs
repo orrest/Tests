@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Tests.Wpf.Controls;
+using Tests.Wpf.CustomizedMessageBox;
 using Tests.Wpf.Medias;
 using Tests.Wpf.Models;
 
@@ -45,6 +46,12 @@ public partial class MainViewModel : ObservableRecipient
                 Name = nameof(CustomizedTabItemView),
                 Type = typeof(CustomizedTabItemView),
                 Instance = new CustomizedTabItemView(),
+            },
+            new()
+            {
+                Name = nameof(MessageBoxView),
+                Type = typeof(MessageBoxView),
+                Instance = new MessageBoxView(),
             },
         ];
 

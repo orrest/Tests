@@ -37,6 +37,8 @@
             <ContentControl Content="{Binding SelectedView.Instance}" />
         </Border>
 
-        <TextBlock Grid.Row="1" Text="{Binding Path=ToastMessage}" />
+        <TextBlock Grid.Row="1"
+                   Grid.ColumnSpan="2"
+                   Text="{Binding Path=ToastMessage}" />
     </Grid>
 </Window>

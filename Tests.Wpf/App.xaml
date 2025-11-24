@@ -3,10 +3,39 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:Tests.Wpf.Converters"
              xmlns:local="clr-namespace:Tests.Wpf"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
+            <Thickness x:Key="ThicknessSmallLeft">5,0,0,0</Thickness>
+            <Thickness x:Key="ThicknessSmallTop">0,5,0,0</Thickness>
+            <Thickness x:Key="ThicknessSmallRight">0,0,5,0</Thickness>
+            <Thickness x:Key="ThicknessSmallDown">0,0,0,5</Thickness>
+            <Thickness x:Key="ThicknessSmallHorizontal">5,0</Thickness>
+            <Thickness x:Key="ThicknessSmallVertical">0,5</Thickness>
+            <Thickness x:Key="ThicknessSmall">5</Thickness>
+
+            <Thickness x:Key="ThicknessMediumLeft">12,0,0,0</Thickness>
+            <Thickness x:Key="ThicknessMediumTop">0,12,0,0</Thickness>
+            <Thickness x:Key="ThicknessMediumRight">0,0,12,0</Thickness>
+            <Thickness x:Key="ThicknessMediumBottom">0,0,0,12</Thickness>
+            <Thickness x:Key="ThicknessMediumHorizontal">12,0</Thickness>
+            <Thickness x:Key="ThicknessMediumVertical">0,12</Thickness>
+            <Thickness x:Key="ThicknessMedium">12</Thickness>
+
+            <system:Double x:Key="SmallWidth">64</system:Double>
+            <system:Double x:Key="NormalWidth">128</system:Double>
+            <system:Double x:Key="LongTextWidth">256</system:Double>
+            <system:Double x:Key="SuperLongTextWidth">624</system:Double>
+
+            <system:Double x:Key="NormalHeight">26</system:Double>
+            <system:Double x:Key="InCellHeight">22</system:Double>
+
+
+            <converters:ContentLengthToVisibilityConverter x:Key="ContentLengthToVisibilityConverter" />
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
                 <ResourceDictionary Source="/Themes/TabItem.xaml" />
