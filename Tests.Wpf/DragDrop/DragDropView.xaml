@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="Tests.Wpf.DragDrop.DragDropView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:local="clr-namespace:Tests.Wpf.DragDrop"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DataContext="{d:DesignInstance Type=local:DragDropViewModel}"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             mc:Ignorable="d">
+    <StackPanel Margin="5">
+        <Label Content="Drag from DataGrid and Drop to ListView" />
+        <ListView Height="180"
+                  dd:DragDrop.DropHandler="{Binding DropHandler, Mode=OneWay}"
+                  dd:DragDrop.IsDropTarget="True"
+                  dd:DragDrop.SelectDroppedItems="True"
+                  dd:DragDrop.UseDropTargetHint="True"
+                  BorderBrush="LightGray"
+                  BorderThickness="1"
+                  DisplayMemberPath="Address"
+                  ItemsSource="{Binding Items1, Mode=OneWay}">
+            <dd:DragDrop.DropAdornerTemplate>
+                <DataTemplate DataType="local:DragDropItem">
+                    <Border Padding="4"
+                            Background="White"
+                            BorderBrush="Black"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                        <TextBlock Text="{Binding Address}" />
+                    </Border>
+                </DataTemplate>
+            </dd:DragDrop.DropAdornerTemplate>
+        </ListView>
+        <DataGrid Height="180"
+                  dd:DragDrop.DragDropCopyKeyState="LeftMouseButton"
+                  dd:DragDrop.IsDragSource="True"
+                  dd:DragDrop.UseDefaultEffectDataTemplate="True"
+                  IsReadOnly="True"
+                  ItemsSource="{Binding Items2}" />
+    </StackPanel>
+</UserControl>

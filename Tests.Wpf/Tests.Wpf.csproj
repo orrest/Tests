@@ -10,7 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" Version="35.6.5" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
     <PackageReference Include="LibVLCSharp.WPF" Version="3.9.4" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
   </ItemGroup>

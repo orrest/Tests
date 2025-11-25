@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Tests.Wpf.Controls;
 using Tests.Wpf.CustomizedMessageBox;
+using Tests.Wpf.DragDrop;
 using Tests.Wpf.Medias;
 using Tests.Wpf.Models;
 
@@ -53,6 +54,12 @@ public partial class MainViewModel : ObservableRecipient
                 Type = typeof(MessageBoxView),
                 Instance = new MessageBoxView(),
             },
+            new ()
+            {
+                Name = nameof(DragDropView),
+                Type = typeof(DragDropView),
+                Instance = new DragDropView(),
+            }
         ];
 
         Messenger.Register<string, string>(
