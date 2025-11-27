@@ -79,6 +79,8 @@ public partial class MessageBox : Window
     public MessageBox()
     {
         InitializeComponent();
+
+        Topmost = true;
         MaxWidth = 450;
         DataContext = this;
         SizeToContent = SizeToContent.WidthAndHeight;

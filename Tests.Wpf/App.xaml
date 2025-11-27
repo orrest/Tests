@@ -39,6 +39,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
                 <ResourceDictionary Source="/Themes/TabItem.xaml" />
+                <ResourceDictionary Source="/Themes/ProgressMask.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
