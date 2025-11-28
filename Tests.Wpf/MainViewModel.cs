@@ -8,6 +8,7 @@ using Tests.Wpf.DragDrop;
 using Tests.Wpf.Medias;
 using Tests.Wpf.Models;
 using Tests.Wpf.ProgressMask;
+using Tests.Wpf.Validations;
 
 namespace Tests.Wpf;
 
@@ -73,6 +74,12 @@ public partial class MainViewModel : ObservableRecipient
                 Name = nameof(DesignTimeDataView),
                 Type = typeof(DesignTimeDataView),
                 Instance = new DesignTimeDataView(),
+            },
+            new()
+            {
+                Name = nameof(ValidationView),
+                Type = typeof(ValidationView),
+                Instance = new ValidationView(),
             },
         ];
 
