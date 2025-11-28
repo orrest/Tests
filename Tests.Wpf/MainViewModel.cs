@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Tests.Wpf.Controls;
 using Tests.Wpf.CustomizedMessageBox;
+using Tests.Wpf.DesignTimeData;
 using Tests.Wpf.DragDrop;
 using Tests.Wpf.Medias;
 using Tests.Wpf.Models;
@@ -67,6 +68,12 @@ public partial class MainViewModel : ObservableRecipient
                 Type = typeof(ProgressMaskView),
                 Instance = new ProgressMaskView(),
             },
+            new()
+            {
+                Name = nameof(DesignTimeDataView),
+                Type = typeof(DesignTimeDataView),
+                Instance = new DesignTimeDataView(),
+            },
         ];
 
         Messenger.Register<string, string>(
@@ -76,6 +83,6 @@ public partial class MainViewModel : ObservableRecipient
             {
                 ToastMessage = m;
             }
-            );
+        );
     }
 }
