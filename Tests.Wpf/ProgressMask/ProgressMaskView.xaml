@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="Tests.Wpf.ProgressMask.ProgressMaskView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Tests.Wpf.ProgressMask"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DataContext="{d:DesignInstance Type=local:ProgressMaskViewModel,
+                                              IsDesignTimeCreatable=False}"
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             mc:Ignorable="d">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Command="{Binding Path=ShowProgressMaskCommand, Mode=OneWay}" Content="Show progress mask" />
+            <Button Command="{Binding Path=ShowMaskThenManuallyCancelIterationCommand, Mode=OneWay}" Content="Show Mask Then Manually Cancel Iteration" />
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -42,14 +42,6 @@
                    Grid.ColumnSpan="2"
                    Text="{Binding Path=ToastMessage}" />
 
-        <StackPanel Grid.Row="0"
-                    Grid.Column="1"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-            <Button Command="{Binding Path=ShowProgressMaskCommand, Mode=OneWay}" Content="Show progress mask" />
-            <Button Command="{Binding Path=ShowMaskThenManuallyCancelIterationCommand, Mode=OneWay}" Content="Show Mask Then Manually Cancel Iteration" />
-        </StackPanel>
-
         <controls:ProgressMask Grid.Row="0"
                                Grid.Column="1"
                                Panel.ZIndex="99"
