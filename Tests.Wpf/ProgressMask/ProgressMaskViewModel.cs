@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Tests.Wpf.Constants;
 using Tests.Wpf.Messages;
 
 namespace Tests.Wpf.ProgressMask;
@@ -27,7 +28,7 @@ public partial class ProgressMaskViewModel : ObservableRecipient
         var token = source.Token;
 
         // begin loading
-        Messenger.Send("Start loading...", nameof(MainViewModel));
+        Messenger.Send("Start loading...", Channels.TOAST);
 
         var i = 1;
         for (; i <= 10; i++)
@@ -56,7 +57,7 @@ public partial class ProgressMaskViewModel : ObservableRecipient
             ? $"Finished by manually cancellation before [{i}]!"
             : $"{i - 1} iterations finished!";
 
-        Messenger.Send(finishMessage, nameof(MainViewModel));
+        Messenger.Send(finishMessage, Channels.TOAST);
 
         Messenger.Send(new ProgressMaskMessage(visible: false), nameof(ProgressMask));
     }

@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Tests.Wpf.Constants;
 using Tests.Wpf.Controls;
 
 namespace Tests.Wpf.CustomizedMessageBox;
@@ -14,7 +15,7 @@ public partial class MessageBoxViewModel : ObservableRecipient
         {
             Messenger.Send(
                 $"Thread [{Environment.CurrentManagedThreadId}] is thread pool thread: {Thread.CurrentThread.IsThreadPoolThread}.",
-                nameof(MainViewModel)
+                Channels.TOAST
             );
 
             try
@@ -22,18 +23,18 @@ public partial class MessageBoxViewModel : ObservableRecipient
                 var box = new MessageBox();
                 Messenger.Send(
                     $"Thread [{Environment.CurrentManagedThreadId}] show message box.",
-                    nameof(MainViewModel)
+                    Channels.TOAST
                 );
 
                 var result = await box.ShowDialogAsync();
                 Messenger.Send(
                     $"Thread [{Environment.CurrentManagedThreadId}] message box result {result}.",
-                    nameof(MainViewModel)
+                    Channels.TOAST
                 );
             }
             catch (Exception e)
             {
-                Messenger.Send(e.Message, nameof(MainViewModel));
+                Messenger.Send(e.Message, Channels.TOAST);
             }
         });
     }
@@ -57,7 +58,7 @@ public partial class MessageBoxViewModel : ObservableRecipient
             {
                 Messenger.Send(
                     $"Set properties of {nameof(MessageBox)} on thread {Environment.CurrentManagedThreadId} failed, because {e.Message}",
-                    nameof(MainViewModel)
+                    Channels.TOAST
                 );
             }
         });
@@ -87,18 +88,18 @@ public partial class MessageBoxViewModel : ObservableRecipient
                 var r = await box.ShowDialogAsync();
                 if (r == System.Windows.MessageBoxResult.OK)
                 {
-                    Messenger.Send("I'm OK here.", nameof(MainViewModel));
+                    Messenger.Send("I'm OK here.", Channels.TOAST);
                 }
                 else if (r == System.Windows.MessageBoxResult.Cancel)
                 {
-                    Messenger.Send("Cancelled.", nameof(MainViewModel));
+                    Messenger.Send("Cancelled.", Channels.TOAST);
                 }
             }
             catch (Exception)
             {
                 Messenger.Send(
                     "The `ShowDialogAsync` method finally called the `ShowDialog` which also belongs to the UI thread.",
-                    nameof(MainViewModel)
+                    Channels.TOAST
                 );
             }
         });
@@ -127,11 +128,11 @@ public partial class MessageBoxViewModel : ObservableRecipient
         {
             if (result == System.Windows.MessageBoxResult.Yes)
             {
-                Messenger.Send("I'm OK here.", nameof(MainViewModel));
+                Messenger.Send("I'm OK here.", Channels.TOAST);
             }
             else if (result == System.Windows.MessageBoxResult.No)
             {
-                Messenger.Send("Cancelled.", nameof(MainViewModel));
+                Messenger.Send("Cancelled.", Channels.TOAST);
             }
         });
     }

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Tests.Wpf.Constants;
 
 namespace Tests.Wpf.Controls;
 
@@ -12,6 +13,6 @@ public partial class VisibilityViewModel : ObservableRecipient
     private void ChangeVisibility()
     {
         IsVisible = !IsVisible;
-        Messenger.Send($"Visible: {IsVisible}", nameof(MainViewModel));
+        Messenger.Send($"Visible: {IsVisible}", Channels.TOAST);
     }
 }
