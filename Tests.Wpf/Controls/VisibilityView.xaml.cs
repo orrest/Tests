@@ -4,10 +4,10 @@ namespace Tests.Wpf.Controls;
 
 public partial class VisibilityView : UserControl
 {
-    public VisibilityView()
+    public VisibilityView(VisibilityViewModel viewModel)
     {
         InitializeComponent();
 
-        DataContext = new VisibilityViewModel();
+        DataContext = viewModel;
     }
 }

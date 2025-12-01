@@ -4,10 +4,9 @@ namespace Tests.Wpf.Medias;
 
 public partial class PlayerView : UserControl
 {
-    public PlayerView()
+    public PlayerView(PlayerViewModel viewModel)
     {
         InitializeComponent();
-
-        DataContext = new PlayerViewModel();
+        DataContext = viewModel;
     }
 }

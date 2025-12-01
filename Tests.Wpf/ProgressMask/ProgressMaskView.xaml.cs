@@ -4,9 +4,9 @@ namespace Tests.Wpf.ProgressMask;
 
 public partial class ProgressMaskView : UserControl
 {
-    public ProgressMaskView()
+    public ProgressMaskView(ProgressMaskViewModel viewModel)
     {
         InitializeComponent();
-        DataContext = new ProgressMaskViewModel();
+        DataContext = viewModel;
     }
 }

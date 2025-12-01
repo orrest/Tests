@@ -4,9 +4,9 @@ namespace Tests.Wpf.Validations;
 
 public partial class ValidationView : UserControl
 {
-    public ValidationView()
+    public ValidationView(ValidationViewModel viewModel)
     {
         InitializeComponent();
-        DataContext = new ValidationViewModel();
+        DataContext = viewModel;
     }
 }

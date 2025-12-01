@@ -4,9 +4,9 @@ namespace Tests.Wpf.CustomizedMessageBox;
 
 public partial class MessageBoxView : UserControl
 {
-    public MessageBoxView()
+    public MessageBoxView(MessageBoxViewModel viewModel)
     {
         InitializeComponent();
-        DataContext = new MessageBoxViewModel();
+        DataContext = viewModel;
     }
 }

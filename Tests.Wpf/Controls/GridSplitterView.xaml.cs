@@ -5,11 +5,10 @@ namespace Tests.Wpf.Controls;
 
 public partial class GridSplitterView : UserControl
 {
-    public GridSplitterView()
+    public GridSplitterView(GridSplitterViewModel viewModel)
     {
         InitializeComponent();
-
-        DataContext = new GridSplitterViewModel();
+        DataContext = viewModel;
     }
 
     private void Hyperlink_RequestNavigate(

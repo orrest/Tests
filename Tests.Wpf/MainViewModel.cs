@@ -18,69 +18,21 @@ public partial class MainViewModel : ObservableRecipient
     public partial ObservableCollection<ViewItem> ViewItems { get; set; }
 
     [ObservableProperty]
-    public partial ViewItem? SelectedView { get; set; }
-
-    [ObservableProperty]
     public partial string ToastMessage { get; set; } = string.Empty;
 
     public MainViewModel()
     {
         ViewItems =
         [
-            new()
-            {
-                Name = nameof(PlayerView),
-                Type = typeof(PlayerView),
-                Instance = new PlayerView(),
-            },
-            new()
-            {
-                Name = nameof(VisibilityView),
-                Type = typeof(VisibilityView),
-                Instance = new VisibilityView(),
-            },
-            new()
-            {
-                Name = nameof(GridSplitterView),
-                Type = typeof(GridSplitterView),
-                Instance = new GridSplitterView(),
-            },
-            new()
-            {
-                Name = nameof(CustomizedTabItemView),
-                Type = typeof(CustomizedTabItemView),
-                Instance = new CustomizedTabItemView(),
-            },
-            new()
-            {
-                Name = nameof(MessageBoxView),
-                Type = typeof(MessageBoxView),
-                Instance = new MessageBoxView(),
-            },
-            new()
-            {
-                Name = nameof(DragDropView),
-                Type = typeof(DragDropView),
-                Instance = new DragDropView(),
-            },
-            new()
-            {
-                Name = nameof(ProgressMaskView),
-                Type = typeof(ProgressMaskView),
-                Instance = new ProgressMaskView(),
-            },
-            new()
-            {
-                Name = nameof(DesignTimeDataView),
-                Type = typeof(DesignTimeDataView),
-                Instance = new DesignTimeDataView(),
-            },
-            new()
-            {
-                Name = nameof(ValidationView),
-                Type = typeof(ValidationView),
-                Instance = new ValidationView(),
-            },
+            new() { Name = nameof(PlayerView) },
+            new() { Name = nameof(VisibilityView) },
+            new() { Name = nameof(GridSplitterView) },
+            new() { Name = nameof(CustomizedTabItemView) },
+            new() { Name = nameof(MessageBoxView) },
+            new() { Name = nameof(DragDropView) },
+            new() { Name = nameof(ProgressMaskView) },
+            new() { Name = nameof(DesignTimeDataView) },
+            new() { Name = nameof(ValidationView) },
         ];
 
         Messenger.Register<string, string>(

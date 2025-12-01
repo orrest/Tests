@@ -4,9 +4,9 @@ namespace Tests.Wpf.DesignTimeData;
 
 public partial class DesignTimeDataView : UserControl
 {
-    public DesignTimeDataView()
+    public DesignTimeDataView(DesignTimeDataViewModel viewModel)
     {
         InitializeComponent();
-        DataContext = new DesignTimeDataViewModel();
+        DataContext = viewModel;
     }
 }

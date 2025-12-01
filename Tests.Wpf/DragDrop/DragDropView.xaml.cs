@@ -4,9 +4,9 @@ namespace Tests.Wpf.DragDrop;
 
 public partial class DragDropView : UserControl
 {
-    public DragDropView()
+    public DragDropView(DragDropViewModel viewModel)
     {
         InitializeComponent();
-        DataContext = new DragDropViewModel();
+        DataContext = viewModel;
     }
 }
