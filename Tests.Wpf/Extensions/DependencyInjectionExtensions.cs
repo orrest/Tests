@@ -4,6 +4,8 @@ using Tests.Wpf.Controls;
 using Tests.Wpf.CustomizedMessageBox;
 using Tests.Wpf.DesignTimeData;
 using Tests.Wpf.DragDrop;
+using Tests.Wpf.Medias;
+using Tests.Wpf.Models;
 using Tests.Wpf.ProgressMask;
 using Tests.Wpf.Validations;
 
@@ -20,23 +22,31 @@ public static class DependencyInjectionExtensions
                 sc.AddSingleton<MainViewModel>();
 
                 // navigation
-                sc.AddTransient<VisibilityView>();
-                sc.AddTransient<VisibilityViewModel>();
-                sc.AddTransient<GridSplitterView>();
-                sc.AddTransient<GridSplitterViewModel>();
-                sc.AddTransient<CustomizedTabItemView>();
-                sc.AddTransient<CustmizedTabItemViewModel>();
-                sc.AddTransient<MessageBoxView>();
-                sc.AddTransient<MessageBoxViewModel>();
-                sc.AddTransient<DragDropView>();
-                sc.AddTransient<DragDropViewModel>();
-                sc.AddTransient<ProgressMaskView>();
-                sc.AddTransient<ProgressMaskViewModel>();
-                sc.AddTransient<DesignTimeDataView>();
-                sc.AddTransient<DesignTimeDataViewModel>();
-                sc.AddTransient<ValidationView>();
-                sc.AddTransient<ValidationViewModel>();
+                sc.AddSingletonForNavigation(typeof(VisibilityView), typeof(VisibilityViewModel));
+                sc.AddSingletonForNavigation(typeof(GridSplitterView), typeof(GridSplitterViewModel));
+                sc.AddSingletonForNavigation(typeof(CustomizedTabItemView), typeof(CustomizedTabItemViewModel));
+                sc.AddSingletonForNavigation(typeof(MessageBoxView), typeof(MessageBoxViewModel));
+                sc.AddSingletonForNavigation(typeof(DragDropView), typeof(DragDropViewModel));
+                sc.AddSingletonForNavigation(typeof(ProgressMaskView), typeof(ProgressMaskViewModel));
+                sc.AddSingletonForNavigation(typeof(DesignTimeDataView), typeof(DesignTimeDataViewModel));
+                sc.AddSingletonForNavigation(typeof(ValidationView), typeof(ValidationViewModel));
+                sc.AddSingletonForNavigation(typeof(PlayerView), typeof(PlayerViewModel));
             }
         );
+    }
+
+    public static void AddSingletonForNavigation(this IServiceCollection sc, Type view, Type viewModel)
+    {
+        var viewItem = new ViewRegistryItem()
+        {
+            Name = view.Name,
+            ViewType = view,
+            ViewModelType = viewModel
+        };
+
+        sc.AddSingleton(viewItem);
+
+        sc.AddSingleton(view);
+        sc.AddSingleton(viewModel);
     }
 }

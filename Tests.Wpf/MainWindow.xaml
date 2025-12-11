@@ -27,8 +27,8 @@
                   ItemsSource="{Binding Path=ViewItems}"
                   SelectedItem="{Binding Path=SelectedView}">
             <ListView.ItemTemplate>
-                <DataTemplate DataType="models:ViewItem">
-                    <TextBlock Text="{Binding Path=Name}" />
+                <DataTemplate DataType="{x:Type models:ViewItem}">
+                    <TextBlock Text="{Binding Path=ItemName}" />
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>

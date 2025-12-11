@@ -1,94 +1,72 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LibVLCSharp.Shared;
+using SoundFlow.Backends.MiniAudio;
+using SoundFlow.Components;
+using SoundFlow.Enums;
+using SoundFlow.Providers;
+using SoundFlow.Structs;
+using System.IO;
 using Tests.Wpf.Constants;
-using Tests.Wpf.Threadings;
 
 namespace Tests.Wpf.Medias;
 
-public sealed partial class PlayerViewModel : ObservableRecipient, IDisposable
+public sealed partial class PlayerViewModel : ObservableRecipient
 {
-    private readonly List<FileInfo> sounds;
-    private readonly LibVLC vlc;
-
-    private MediaPlayer? currentPlayer;
-    private int currentIndex;
-
-    public PlayerViewModel()
-    {
-        sounds = [new("./Files/sample-3s.mp3"), new("./Files/sample-6s.mp3")];
-        currentIndex = 0;
-
-        vlc = new LibVLC(enableDebugLogs: true);
-    }
-
-    public void Dispose()
-    {
-        currentPlayer?.Dispose();
-        vlc.Dispose();
-    }
-
     [RelayCommand]
-    private void Play()
+    public async Task Play()
     {
-        if (currentIndex >= sounds.Count)
+        // Initialize the audio engine with the MiniAudio backend.
+        using var audioEngine = new MiniAudioEngine();
+
+        // Find the default playback device.
+        var defaultPlaybackDevice = audioEngine
+            .PlaybackDevices
+            .FirstOrDefault(d => d.IsDefault);
+
+        if (defaultPlaybackDevice.Id == IntPtr.Zero)
         {
-            Messenger.Send($"Index {currentIndex}, list over.", Channels.TOAST);
+            Messenger.Send("No default playback device found.", Channels.TOAST);
             return;
         }
 
-        var sound = sounds[currentIndex];
-        using var media = new Media(vlc, sound.FullName);
-
-        currentPlayer = new MediaPlayer(vlc);
-        currentPlayer?.EndReached += (s, e) =>
+        // The audio format for processing. We'll use 32-bit float, which is standard for processing.
+        // The data provider will handle decoding the source file to this format.
+        var audioFormat = new AudioFormat
         {
-            Messenger.Send($"Index {currentIndex}, end reached.", Channels.TOAST);
-
-            currentIndex++;
-            Play();
+            Format = SampleFormat.F32,
+            SampleRate = 48000,
+            Channels = 2,
         };
 
-        Messenger.Send($"Index {currentIndex}, playing...", Channels.TOAST);
+        // Initialize the playback device. This manages the connection to the physical audio hardware.
+        // The 'using' statement ensures it's properly disposed of.
+        using var device = audioEngine
+            .InitializePlaybackDevice(defaultPlaybackDevice, audioFormat);
 
-        currentPlayer?.Play(media);
-    }
+        // Create a data provider for the audio file.
+        // Replace "path/to/your/audiofile.wav" with the actual path to your audio file.
+        using var dataProvider = new StreamDataProvider(
+            audioEngine,
+            audioFormat,
+            File.OpenRead("Files/file_example_MP3_1MG.mp3")
+        );
 
-    [RelayCommand]
-    private async Task Play1()
-    {
-        if (currentIndex >= sounds.Count)
-        {
-            Messenger.Send($"Index {currentIndex}, list over.", Channels.TOAST);
-            return;
-        }
+        // Create a SoundPlayer, linking the engine, format, and data provider.
+        // The player is also IDisposable.
+        using var player = new SoundPlayer(audioEngine, audioFormat, dataProvider);
 
-        var sound = sounds[currentIndex];
-        using var media = new Media(vlc, sound.FullName);
+        // Add the player to the device's master mixer to route its audio for playback.
+        device.MasterMixer.AddComponent(player);
 
-        Messenger.Send($"Index {currentIndex}, playing...", Channels.TOAST);
-        Messenger.Send($"On thread {Environment.CurrentManagedThreadId}, playing...", Channels.TOAST);
+        // Start the device. This opens the audio stream to the hardware.
+        device.Start();
 
-        currentPlayer = new MyMediaPlayer(vlc);
-        bool finished = await ((MyMediaPlayer)currentPlayer).PlayAsync(media);
+        var tcs = new TaskCompletionSource<bool>();
+        player.PlaybackEnded += (s, e) => tcs.SetResult(true);
 
-        Messenger.Send($"On thread {Environment.CurrentManagedThreadId}, finished...", Channels.TOAST);
+        // Start playback.
+        player.Play();
 
-        if (finished)
-        {
-            currentIndex++;
-            await Play1();
-        }
-    }
-
-    [RelayCommand]
-    private void Reset()
-    {
-        currentPlayer?.Dispose();
-        currentIndex = 0;
-
-        Messenger.Send($"Reset index to {currentIndex}.", Channels.TOAST);
+        await tcs.Task;
     }
 }

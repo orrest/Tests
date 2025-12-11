@@ -2,6 +2,6 @@
 
 namespace Tests.Wpf.Controls;
 
-public partial class CustmizedTabItemViewModel : ObservableRecipient
+public partial class CustomizedTabItemViewModel : ObservableRecipient
 {
 }

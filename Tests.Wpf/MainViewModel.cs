@@ -3,14 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Tests.Wpf.Constants;
-using Tests.Wpf.Controls;
-using Tests.Wpf.CustomizedMessageBox;
-using Tests.Wpf.DesignTimeData;
-using Tests.Wpf.DragDrop;
-using Tests.Wpf.Messages;
 using Tests.Wpf.Models;
-using Tests.Wpf.ProgressMask;
-using Tests.Wpf.Validations;
 
 namespace Tests.Wpf;
 
@@ -36,17 +29,18 @@ public partial class MainViewModel : ObservableRecipient
 
         ViewItems =
         [
-            new() { Name = "Visibility", View = ViewName.VISIBILITY },
-            new() { Name = "Grid Splitter", View = ViewName.GRID_SPLLITER },
-            new() { Name = "Customized TabItem", View = ViewName.CUSTOMIZED_TAB_ITEM },
-            new() { Name = "Customized MessageBox", View = ViewName.MESSAGE_BOX },
-            new() { Name = "DragDrop", View = ViewName.DRAG_DROP },
-            new() { Name = "ProgressMask", View = ViewName.PROGRESS },
-            new() { Name = nameof(DesignTimeDataView), View = ViewName.DESIGN_DATA },
-            new() { Name = "Validation", View = ViewName.VALIDATION },
+            new("Visibility", "VisibilityView"),
+            new("Grid splitter", "GridSplitterView"),
+            new("Customized tab item", "CustomizedTabItemView"),
+            new("Message box", "MessageBoxView"),
+            new("Drag drop", "DragDropView"),
+            new("Progress", "ProgressMaskView"),
+            new("Design time data", "DesignTimeDataView"),
+            new("Data validation", "ValidationView"),
+            new("Audio player", "PlayerView"),
         ];
 
-        Messenger.Register<NavigationMessage, string>(
+        Messenger.Register<string, string>(
             this,
             Channels.NAVIGATION,
             (r, m) =>
@@ -65,57 +59,22 @@ public partial class MainViewModel : ObservableRecipient
         );
     }
 
-    private void Navigate(NavigationMessage m)
+    private void Navigate(string viewName)
     {
-        var view = m.View;
-
-        object? instance = null;
-        switch (view)
+        var views = this.serviceProvider.GetService<IEnumerable<ViewRegistryItem>>();
+        var viewItem = views?.LastOrDefault(v => v.Name == viewName);
+        if (viewItem is null)
         {
-            case ViewName.VISIBILITY:
-            {
-                instance = this.serviceProvider.GetRequiredService<VisibilityView>();
-                break;
-            }
-
-            case ViewName.GRID_SPLLITER:
-            {
-                instance = this.serviceProvider.GetRequiredService<GridSplitterView>();
-                break;
-            }
-            case ViewName.CUSTOMIZED_TAB_ITEM:
-            {
-                instance = this.serviceProvider.GetRequiredService<CustomizedTabItemView>();
-                break;
-            }
-            case ViewName.MESSAGE_BOX:
-            {
-                instance = this.serviceProvider.GetRequiredService<MessageBoxView>();
-                break;
-            }
-            case ViewName.DRAG_DROP:
-            {
-                instance = this.serviceProvider.GetRequiredService<DragDropView>();
-                break;
-            }
-            case ViewName.PROGRESS:
-            {
-                instance = this.serviceProvider.GetRequiredService<ProgressMaskView>();
-                break;
-            }
-            case ViewName.DESIGN_DATA:
-            {
-                instance = this.serviceProvider.GetRequiredService<DesignTimeDataView>();
-                break;
-            }
-            case ViewName.VALIDATION:
-            {
-                instance = this.serviceProvider.GetRequiredService<ValidationView>();
-                break;
-            }
+            return;
         }
 
-        ContentView = instance;
+        var view = this.serviceProvider.GetService(viewItem.ViewType);
+        if (view is null)
+        {
+            return;
+        }
+
+        ContentView = view;
     }
 
     partial void OnSelectedViewChanged(ViewItem? value)
@@ -125,6 +84,6 @@ public partial class MainViewModel : ObservableRecipient
             return;
         }
 
-        Messenger.Send(new NavigationMessage() { View = value.View }, Channels.NAVIGATION);
+        Messenger.Send(value.ViewName, Channels.NAVIGATION);
     }
 }
