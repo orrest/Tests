@@ -38,6 +38,7 @@ public partial class MainViewModel : ObservableRecipient
             new("Design time data", "DesignTimeDataView"),
             new("Data validation", "ValidationView"),
             new("Audio player", "PlayerView"),
+            new("Snackbar", "SnackbarView"),
         ];
 
         Messenger.Register<string, string>(

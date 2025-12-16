@@ -7,6 +7,7 @@ using Tests.Wpf.DragDrop;
 using Tests.Wpf.Medias;
 using Tests.Wpf.Models;
 using Tests.Wpf.ProgressMask;
+using Tests.Wpf.Snackbar;
 using Tests.Wpf.Validations;
 
 namespace Tests.Wpf.Extensions;
@@ -21,6 +22,8 @@ public static class DependencyInjectionExtensions
                 sc.AddSingleton<MainWindow>();
                 sc.AddSingleton<MainViewModel>();
 
+                sc.AddSingleton<SnackbarService>();
+
                 // navigation
                 sc.AddSingletonForNavigation(typeof(VisibilityView), typeof(VisibilityViewModel));
                 sc.AddSingletonForNavigation(typeof(GridSplitterView), typeof(GridSplitterViewModel));
@@ -31,6 +34,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(DesignTimeDataView), typeof(DesignTimeDataViewModel));
                 sc.AddSingletonForNavigation(typeof(ValidationView), typeof(ValidationViewModel));
                 sc.AddSingletonForNavigation(typeof(PlayerView), typeof(PlayerViewModel));
+                sc.AddSingletonForNavigation(typeof(SnackbarView), typeof(SnackbarViewModel));
             }
         );
     }

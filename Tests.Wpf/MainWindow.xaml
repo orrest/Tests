@@ -48,5 +48,10 @@
                                Panel.ZIndex="99"
                                CancellationText="Cancel"
                                Visibility="Collapsed" />
+
+        <ContentControl x:Name="snackbar"
+                        Grid.Column="1"
+                        VerticalAlignment="Bottom"
+                        Panel.ZIndex="99" />
     </Grid>
 </Window>
