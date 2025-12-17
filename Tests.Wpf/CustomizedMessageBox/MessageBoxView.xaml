@@ -13,5 +13,6 @@
         <Button Command="{Binding CreateOnUiThreadButSetPropertiesOnNonUiThreadCommand}" Content="CAN'T SET ON NON-UI THREAD" />
         <Button Command="{Binding SetOnUiThreadAndContinueOnNonUiThreadCommand}" Content="CAN'T SHOW ON NON-UI THREAD" />
         <Button Command="{Binding ShowOnUiThreadAndContinueOnNonUiThreadCommand}" Content="SHOW ON UI THREAD, AND CONTINUE ON NON-UI THREAD" />
+        <Button Command="{Binding DefaultMessageBoxCommand}" Content="Default MessageBox" />
     </StackPanel>
 </UserControl>

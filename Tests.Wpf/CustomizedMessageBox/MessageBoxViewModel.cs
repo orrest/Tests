@@ -136,4 +136,10 @@ public partial class MessageBoxViewModel : ObservableRecipient
             }
         });
     }
+
+    [RelayCommand]
+    private void DefaultMessageBox()
+    {
+        System.Windows.MessageBox.Show("Message", "Caption");
+    }
 }
