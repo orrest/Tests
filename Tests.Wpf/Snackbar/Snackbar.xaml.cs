@@ -6,7 +6,7 @@ namespace Tests.Wpf.Snackbar;
 
 public partial class Snackbar : UserControl
 {
-    public event EventHandler? Closed;
+    private readonly CancellationTokenSource cancellationSource = new();
 
     public SnackbarRecord Record
     {
@@ -35,16 +35,37 @@ public partial class Snackbar : UserControl
     {
         InitializeComponent();
         
-        Loaded += (_, _) => VisualStateManager.GoToElementState(this, "Shown", true);
-
-        SetValue(CloseButtonCommandProperty, new RelayCommand<object>(_ => Close()));
+        SetValue(CloseButtonCommandProperty, new RelayCommand<object>(_ => cancellationSource.Cancel()));
     }
 
-    public void Close()
+    public async Task Show()
     {
+        VisualStateManager.GoToElementState(this, "Shown", true);
+
+        try
+        {
+            await Task.Delay(Record.Timeout, cancellationSource.Token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+    }
+
+    public async Task Close()
+    {
+        var tcs = new TaskCompletionSource();
+
         var sb = Hidden.Storyboard;
-        sb.Completed += (_, _) => Closed?.Invoke(this, EventArgs.Empty);
+        sb.Completed += (_, _) =>
+        {
+            tcs.SetResult();
+        };
 
         VisualStateManager.GoToElementState(this, "Hidden", true);
+
+        cancellationSource.Dispose();
+
+        await tcs.Task;
     }
 }

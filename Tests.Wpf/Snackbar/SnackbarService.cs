@@ -105,10 +105,6 @@ public class SnackbarService
 
     private async Task ShowSnackbar(SnackbarRecord record)
     {
-        var tcs = new TaskCompletionSource();
-        
-        var cancellationSource = new CancellationTokenSource();
-
         var snackbar = new Snackbar();
         snackbar.SetCurrentValue(Snackbar.RecordProperty, record);
 
@@ -117,30 +113,9 @@ public class SnackbarService
             throw new ApplicationException($"SnackbarService not has snackbar ContentControl set.");
         }
 
-        // show
         contentControl.Content = snackbar;
-
-        snackbar.Closed += (_, _) =>
-        {
-            contentControl.Content = null;
-            cancellationSource.Cancel();
-            cancellationSource.Dispose();
-            tcs.SetResult();
-        };
-
-        try
-        {
-            await Task.Delay(record.Timeout, cancellationSource.Token);
-        }
-        // manually closing by cancellation
-        catch (TaskCanceledException)
-        {
-            return;
-        }
-
-        // auto closing
-        snackbar.Close();
-
-        await tcs.Task;
+        await snackbar.Show();
+        await snackbar.Close();
+        contentControl.Content = null;
     }
 }
