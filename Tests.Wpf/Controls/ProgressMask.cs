@@ -79,6 +79,13 @@ public class ProgressMask : ProgressBar
         new PropertyMetadata(null)
     );
 
+    static ProgressMask()
+    {
+        DefaultStyleKeyProperty.OverrideMetadata(
+            typeof(ProgressMask),
+            new FrameworkPropertyMetadata(typeof(ProgressMask)));
+    }
+
     public ProgressMask()
     {
         SetValue(CancelCommandProperty, new RelayCommand(OnCancelClick));
