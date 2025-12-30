@@ -37,6 +37,7 @@
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.UseDefaultEffectDataTemplate="True"
                   IsReadOnly="True"
-                  ItemsSource="{Binding Items2}" />
+                  ItemsSource="{Binding Items2}"
+                  SelectionUnit="Cell" />
     </StackPanel>
 </UserControl>

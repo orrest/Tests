@@ -29,16 +29,17 @@ public partial class MainViewModel : ObservableRecipient
 
         ViewItems =
         [
-            new("Visibility", "VisibilityView"),
-            new("Grid splitter", "GridSplitterView"),
-            new("Customized tab item", "CustomizedTabItemView"),
-            new("Message box", "MessageBoxView"),
-            new("Drag drop", "DragDropView"),
-            new("Progress", "ProgressMaskView"),
-            new("Design time data", "DesignTimeDataView"),
-            new("Data validation", "ValidationView"),
             new("Audio player", "PlayerView"),
+            new("Customized tab item", "CustomizedTabItemView"),
+            new("Data validation", "ValidationView"),
+            new("Design time data", "DesignTimeDataView"),
+            new("Drag drop", "DragDropView"),
+            new("Grid splitter", "GridSplitterView"),
+            new("Message box", "MessageBoxView"),
+            new("Progress", "ProgressMaskView"),
             new("Snackbar", "SnackbarView"),
+            new("Style priority", "StylePriorityView"),
+            new("Visibility", "VisibilityView"),
         ];
 
         Messenger.Register<string, string>(

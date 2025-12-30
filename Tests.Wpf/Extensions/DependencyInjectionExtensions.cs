@@ -8,6 +8,7 @@ using Tests.Wpf.Medias;
 using Tests.Wpf.Models;
 using Tests.Wpf.ProgressMask;
 using Tests.Wpf.Snackbar;
+using Tests.Wpf.Themes;
 using Tests.Wpf.Validations;
 
 namespace Tests.Wpf.Extensions;
@@ -35,6 +36,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(ValidationView), typeof(ValidationViewModel));
                 sc.AddSingletonForNavigation(typeof(PlayerView), typeof(PlayerViewModel));
                 sc.AddSingletonForNavigation(typeof(SnackbarView), typeof(SnackbarViewModel));
+                sc.AddSingletonForNavigation(typeof(StylePriorityView), typeof(StylePriorityViewModel));
             }
         );
     }
