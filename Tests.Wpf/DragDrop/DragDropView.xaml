@@ -35,6 +35,7 @@
         <DataGrid Height="180"
                   dd:DragDrop.DragDropCopyKeyState="LeftMouseButton"
                   dd:DragDrop.IsDragSource="True"
+                  dd:DragDrop.IsDropTarget="True"
                   dd:DragDrop.UseDefaultEffectDataTemplate="True"
                   IsReadOnly="True"
                   ItemsSource="{Binding Items2}"
