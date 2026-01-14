@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Tests.Wpf.Border;
 using Tests.Wpf.Controls;
 using Tests.Wpf.CustomizedMessageBox;
 using Tests.Wpf.DesignTimeData;
@@ -37,6 +38,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(PlayerView), typeof(PlayerViewModel));
                 sc.AddSingletonForNavigation(typeof(SnackbarView), typeof(SnackbarViewModel));
                 sc.AddSingletonForNavigation(typeof(StylePriorityView), typeof(StylePriorityViewModel));
+                sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
             }
         );
     }

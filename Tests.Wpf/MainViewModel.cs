@@ -30,6 +30,7 @@ public partial class MainViewModel : ObservableRecipient
         ViewItems =
         [
             new("Audio player", "PlayerView"),
+            new("Border", "BorderView"),
             new("Customized tab item", "CustomizedTabItemView"),
             new("Data validation", "ValidationView"),
             new("Design time data", "DesignTimeDataView"),
