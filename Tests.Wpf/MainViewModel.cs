@@ -41,6 +41,7 @@ public partial class MainViewModel : ObservableRecipient
             new("Snackbar", "SnackbarView"),
             new("Style priority", "StylePriorityView"),
             new("Visibility", "VisibilityView"),
+            new("Local-built Wpf Assemblies", "LocalWpfView"),
         ];
 
         Messenger.Register<string, string>(

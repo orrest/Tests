@@ -5,6 +5,7 @@ using Tests.Wpf.Controls;
 using Tests.Wpf.CustomizedMessageBox;
 using Tests.Wpf.DesignTimeData;
 using Tests.Wpf.DragDrop;
+using Tests.Wpf.LocalWpf;
 using Tests.Wpf.Medias;
 using Tests.Wpf.Models;
 using Tests.Wpf.ProgressMask;
@@ -39,6 +40,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(SnackbarView), typeof(SnackbarViewModel));
                 sc.AddSingletonForNavigation(typeof(StylePriorityView), typeof(StylePriorityViewModel));
                 sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
+                sc.AddSingletonForNavigation(typeof(LocalWpfView), typeof(LocalWpfViewModel));
             }
         );
     }
