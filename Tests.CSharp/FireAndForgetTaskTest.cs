@@ -56,10 +56,6 @@ public class FireAndForgetTaskTest
     [TestMethod]
     public async Task FireAndForgetMethodIsNotAwaitableEventItsInTaskRun()
     {
-        // The Task.Run only create the task object and add it to the TaskScheduler.
-        // The 'Task.Contunation'-like callback set is how await works.
-        // So if a task is not awaited, the task is 'fire-and-forget'.
-
         static async void action() { await Task.Delay(DELAY_MILLISECONDS);  }
 
         Stopwatch stopwatch = new();
