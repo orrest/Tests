@@ -33,7 +33,7 @@
 
             <converters:ContentLengthToVisibilityConverter x:Key="ContentLengthToVisibilityConverter" />
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-
+            <converters:IsTypeConverter x:Key="IsTypeConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />

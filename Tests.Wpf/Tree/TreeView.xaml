@@ -9,47 +9,104 @@
              d:DesignWidth="800"
              mc:Ignorable="d">
 
-    <UserControl.Resources>
-
-        <!--  Root  -->
-        <HierarchicalDataTemplate DataType="{x:Type local:RootViewModel}" ItemsSource="{Binding Children}">
-            <TextBlock Text="{Binding Name}">
-                <TextBlock.ContextMenu>
-                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                        <MenuItem Command="{Binding AddChildCommand}" Header="Add Child" />
-                    </ContextMenu>
-                </TextBlock.ContextMenu>
-            </TextBlock>
-        </HierarchicalDataTemplate>
-
-        <!--  Child  -->
-        <HierarchicalDataTemplate DataType="{x:Type local:ChildViewModel}" ItemsSource="{Binding Children}">
-            <Border HorizontalAlignment="Stretch" Background="Transparent">
-                <Border.ContextMenu>
-                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                        <MenuItem Command="{Binding AddLeafCommand}" Header="Add Leaf" />
-                    </ContextMenu>
-                </Border.ContextMenu>
-                <TextBlock HorizontalAlignment="Stretch" Text="{Binding Name}" />
-            </Border>
-        </HierarchicalDataTemplate>
-
-        <!--  Leaf  -->
-        <DataTemplate DataType="{x:Type local:LeafViewModel}">
-            <TextBlock Text="{Binding Name}">
-                <TextBlock.ContextMenu>
-                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
-                        <MenuItem Command="{Binding OpenCommand}" Header="Open" />
-                        <MenuItem Command="{Binding DeleteCommand}" Header="Delete Leaf" />
-                    </ContextMenu>
-                </TextBlock.ContextMenu>
-            </TextBlock>
-        </DataTemplate>
-
-    </UserControl.Resources>
-
-
     <Grid>
-        <TreeView ItemsSource="{Binding Roots}" />
+        <TabControl>
+            <TabItem Header="ContextMenu in HierarchicalDataTemplate">
+                <TreeView ItemsSource="{Binding Roots}">
+                    <TreeView.Resources>
+                        <!--  Root  -->
+                        <HierarchicalDataTemplate DataType="{x:Type local:RootViewModel}" ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Name}">
+                                <TextBlock.ContextMenu>
+                                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                        <MenuItem Command="{Binding AddChildCommand}" Header="Add Child" />
+                                    </ContextMenu>
+                                </TextBlock.ContextMenu>
+                            </TextBlock>
+                        </HierarchicalDataTemplate>
+
+                        <!--  Child  -->
+                        <HierarchicalDataTemplate DataType="{x:Type local:ChildViewModel}" ItemsSource="{Binding Children}">
+                            <Border HorizontalAlignment="Stretch" Background="Transparent">
+                                <Border.ContextMenu>
+                                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                        <MenuItem Command="{Binding AddLeafCommand}" Header="Add Leaf" />
+                                    </ContextMenu>
+                                </Border.ContextMenu>
+                                <TextBlock HorizontalAlignment="Stretch" Text="{Binding Name}" />
+                            </Border>
+                        </HierarchicalDataTemplate>
+
+                        <!--  Leaf  -->
+                        <DataTemplate DataType="{x:Type local:LeafViewModel}">
+                            <TextBlock Text="{Binding Name}">
+                                <TextBlock.ContextMenu>
+                                    <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                        <MenuItem Command="{Binding OpenCommand}" Header="Open" />
+                                        <MenuItem Command="{Binding DeleteCommand}" Header="Delete Leaf" />
+                                    </ContextMenu>
+                                </TextBlock.ContextMenu>
+                            </TextBlock>
+                        </DataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </TabItem>
+
+            <TabItem Header="ContextMenu in TreeViewItem Style">
+                <TreeView ItemsSource="{Binding Roots}">
+                    <TreeView.Resources>
+                        <!--  Root  -->
+                        <HierarchicalDataTemplate DataType="{x:Type local:RootViewModel}" ItemsSource="{Binding Children}">
+                            <TextBlock Text="{Binding Name}" />
+                        </HierarchicalDataTemplate>
+
+                        <!--  Child  -->
+                        <HierarchicalDataTemplate DataType="{x:Type local:ChildViewModel}" ItemsSource="{Binding Children}">
+                            <TextBlock HorizontalAlignment="Stretch" Text="{Binding Name}" />
+                        </HierarchicalDataTemplate>
+
+                        <!--  Leaf  -->
+                        <DataTemplate DataType="{x:Type local:LeafViewModel}">
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </TreeView.Resources>
+
+                    <TreeView.ItemContainerStyle>
+                        <Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="TreeViewItem">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Converter={StaticResource IsTypeConverter}, ConverterParameter={x:Type local:RootViewModel}}" Value="True">
+                                    <Setter Property="ContextMenu">
+                                        <Setter.Value>
+                                            <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                                <MenuItem Command="{Binding AddChildCommand}" Header="New Child" />
+                                            </ContextMenu>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Converter={StaticResource IsTypeConverter}, ConverterParameter={x:Type local:ChildViewModel}}" Value="True">
+                                    <Setter Property="ContextMenu">
+                                        <Setter.Value>
+                                            <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                                <MenuItem Command="{Binding AddLeafCommand}" Header="New Leaf" />
+                                            </ContextMenu>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Converter={StaticResource IsTypeConverter}, ConverterParameter={x:Type local:LeafViewModel}}" Value="True">
+                                    <Setter Property="ContextMenu">
+                                        <Setter.Value>
+                                            <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                                <MenuItem Command="{Binding OpenCommand}" Header="Open" />
+                                            </ContextMenu>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                </TreeView>
+
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>
