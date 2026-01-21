@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Bogus;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tests.Wpf.Border;
 using Tests.Wpf.Controls;
@@ -10,6 +11,7 @@ using Tests.Wpf.Models;
 using Tests.Wpf.ProgressMask;
 using Tests.Wpf.Snackbar;
 using Tests.Wpf.Themes;
+using Tests.Wpf.Tree;
 using Tests.Wpf.Validations;
 
 namespace Tests.Wpf.Extensions;
@@ -39,6 +41,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(SnackbarView), typeof(SnackbarViewModel));
                 sc.AddSingletonForNavigation(typeof(StylePriorityView), typeof(StylePriorityViewModel));
                 sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
+                sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
             }
         );
     }
