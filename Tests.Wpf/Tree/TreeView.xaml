@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="Tests.Wpf.Tree.TreeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Tests.Wpf.Controls"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Tests.Wpf.Tree"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -20,7 +21,7 @@
                                 <Grid.ContextMenu>
                                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                                         <MenuItem Command="{Binding AddChildCommand}" Header="Add Child" />
-                                        <MenuItem Command="{Binding RenameCommand}" Header="Rename" />
+                                        <MenuItem Command="{Binding EnterRenameStateCommand}" Header="Rename" />
                                     </ContextMenu>
                                 </Grid.ContextMenu>
                                 <TextBlock x:Name="PART_TextBlock" Text="{Binding Name}" />
@@ -28,7 +29,7 @@
                                          Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                          Visibility="Collapsed">
                                     <TextBox.InputBindings>
-                                        <KeyBinding Key="Return" Command="{Binding RenameFinishedCommand}" />
+                                        <KeyBinding Key="Return" Command="{Binding ExitRenameStateCommand}" />
                                     </TextBox.InputBindings>
                                 </TextBox>
                             </Grid>
@@ -74,12 +75,14 @@
                     <TreeView.Resources>
                         <!--  Root  -->
                         <HierarchicalDataTemplate DataType="{x:Type local:RootViewModel}" ItemsSource="{Binding Children}">
-                            <TextBlock Text="{Binding Name}" />
+                            <controls:EditableText Command="{Binding AfterRenameCommand}"
+                                                   IsEditing="{Binding IsEditing}"
+                                                   Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
                         </HierarchicalDataTemplate>
 
                         <!--  Child  -->
                         <HierarchicalDataTemplate DataType="{x:Type local:ChildViewModel}" ItemsSource="{Binding Children}">
-                            <TextBlock HorizontalAlignment="Stretch" Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Name}" />
                         </HierarchicalDataTemplate>
 
                         <!--  Leaf  -->
@@ -96,6 +99,7 @@
                                         <Setter.Value>
                                             <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                                                 <MenuItem Command="{Binding AddChildCommand}" Header="New Child" />
+                                                <MenuItem Command="{Binding EnterRenameStateCommand}" Header="Rename (customized control)" />
                                             </ContextMenu>
                                         </Setter.Value>
                                     </Setter>

@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Tests.Wpf.Constants;
 using Tests.Wpf.Controls;
 using Tests.Wpf.Helpers;
 
@@ -58,7 +59,7 @@ public partial class TreeViewModel : ObservableObject
     }
 }
 
-public partial class RootViewModel : ObservableObject
+public partial class RootViewModel : ObservableRecipient
 {
     [ObservableProperty]
     public partial string Name { get; set; } = string.Empty;
@@ -80,13 +81,22 @@ public partial class RootViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Rename()
+    private void EnterRenameState()
     {
-        IsEditing = !IsEditing;
+        IsEditing = true;
     }
 
     [RelayCommand]
-    private void RenameFinished()
+    private void AfterRename()
+    {
+        Messenger.Send($"[{nameof(RootViewModel)} - {Name}] Do something before exit rename state.", Channels.TOAST);
+
+        // IsEditing is a two-way binding, so can omit the disable,
+        // it will always be called inside the EditableText control.
+    }
+
+    [RelayCommand]
+    private void ExitRenameState()
     {
         IsEditing = false;
     }
