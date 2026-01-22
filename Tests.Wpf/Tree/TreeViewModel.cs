@@ -60,9 +60,15 @@ public partial class TreeViewModel : ObservableObject
 
 public partial class RootViewModel : ObservableObject
 {
-    public string Name { get; set; } = string.Empty;
+    [ObservableProperty]
+    public partial string Name { get; set; } = string.Empty;
 
     public ObservableCollection<ChildViewModel> Children { get; } = [];
+
+
+    [ObservableProperty]
+    public partial bool IsEditing { get; set; }
+
 
     [RelayCommand]
     private void AddChild()
@@ -73,6 +79,17 @@ public partial class RootViewModel : ObservableObject
         });
     }
 
+    [RelayCommand]
+    private void Rename()
+    {
+        IsEditing = !IsEditing;
+    }
+
+    [RelayCommand]
+    private void RenameFinished()
+    {
+        IsEditing = false;
+    }
 }
 
 public partial class ChildViewModel : ObservableObject

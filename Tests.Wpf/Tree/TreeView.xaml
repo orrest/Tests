@@ -16,14 +16,31 @@
                     <TreeView.Resources>
                         <!--  Root  -->
                         <HierarchicalDataTemplate DataType="{x:Type local:RootViewModel}" ItemsSource="{Binding Children}">
-                            <TextBlock Text="{Binding Name}">
-                                <TextBlock.ContextMenu>
+                            <Grid>
+                                <Grid.ContextMenu>
                                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                                         <MenuItem Command="{Binding AddChildCommand}" Header="Add Child" />
+                                        <MenuItem Command="{Binding RenameCommand}" Header="Rename" />
                                     </ContextMenu>
-                                </TextBlock.ContextMenu>
-                            </TextBlock>
+                                </Grid.ContextMenu>
+                                <TextBlock x:Name="PART_TextBlock" Text="{Binding Name}" />
+                                <TextBox x:Name="PART_TextBox"
+                                         Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="Collapsed">
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Return" Command="{Binding RenameFinishedCommand}" />
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                            </Grid>
+                            <HierarchicalDataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                    <Setter TargetName="PART_TextBlock" Property="Visibility" Value="Collapsed" />
+                                    <Setter TargetName="PART_TextBox" Property="Visibility" Value="Visible" />
+                                    <Setter TargetName="PART_TextBox" Property="FocusManager.FocusedElement" Value="{Binding RelativeSource={RelativeSource Self}}" />
+                                </DataTrigger>
+                            </HierarchicalDataTemplate.Triggers>
                         </HierarchicalDataTemplate>
+
 
                         <!--  Child  -->
                         <HierarchicalDataTemplate DataType="{x:Type local:ChildViewModel}" ItemsSource="{Binding Children}">
