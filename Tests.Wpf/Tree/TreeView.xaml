@@ -24,9 +24,9 @@
                                         <MenuItem Command="{Binding EnterRenameStateCommand}" Header="Rename" />
                                     </ContextMenu>
                                 </Grid.ContextMenu>
-                                <TextBlock x:Name="PART_TextBlock" Text="{Binding Name}" />
+                                <TextBlock x:Name="PART_TextBlock" Text="{Binding Name, Mode=OneWay}" />
                                 <TextBox x:Name="PART_TextBox"
-                                         Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Text="{Binding Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                          Visibility="Collapsed">
                                     <TextBox.InputBindings>
                                         <KeyBinding Key="Return" Command="{Binding ExitRenameStateCommand}" />
@@ -51,13 +51,13 @@
                                         <MenuItem Command="{Binding AddLeafCommand}" Header="Add Leaf" />
                                     </ContextMenu>
                                 </Border.ContextMenu>
-                                <TextBlock HorizontalAlignment="Stretch" Text="{Binding Name}" />
+                                <TextBlock HorizontalAlignment="Stretch" Text="{Binding Name, Mode=OneWay}" />
                             </Border>
                         </HierarchicalDataTemplate>
 
                         <!--  Leaf  -->
                         <DataTemplate DataType="{x:Type local:LeafViewModel}">
-                            <TextBlock Text="{Binding Name}">
+                            <TextBlock Text="{Binding Name, Mode=OneWay}">
                                 <TextBlock.ContextMenu>
                                     <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
                                         <MenuItem Command="{Binding OpenCommand}" Header="Open" />
@@ -71,28 +71,30 @@
             </TabItem>
 
             <TabItem Header="ContextMenu in TreeViewItem Style">
-                <TreeView ItemsSource="{Binding Roots}">
+                <TreeView ItemsSource="{Binding Roots}" SelectedItemChanged="TreeView_SelectedItemChanged">
                     <TreeView.Resources>
                         <!--  Root  -->
                         <HierarchicalDataTemplate DataType="{x:Type local:RootViewModel}" ItemsSource="{Binding Children}">
                             <controls:EditableText Command="{Binding AfterRenameCommand}"
                                                    IsEditing="{Binding IsEditing}"
-                                                   Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                                                   Text="{Binding Name, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" />
                         </HierarchicalDataTemplate>
 
                         <!--  Child  -->
                         <HierarchicalDataTemplate DataType="{x:Type local:ChildViewModel}" ItemsSource="{Binding Children}">
-                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Name, Mode=OneWay}" />
                         </HierarchicalDataTemplate>
 
                         <!--  Leaf  -->
                         <DataTemplate DataType="{x:Type local:LeafViewModel}">
-                            <TextBlock Text="{Binding Name}" />
+                            <TextBlock Text="{Binding Name, Mode=OneWay}" />
                         </DataTemplate>
                     </TreeView.Resources>
 
                     <TreeView.ItemContainerStyle>
                         <Style BasedOn="{StaticResource {x:Type TreeViewItem}}" TargetType="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Converter={StaticResource IsTypeConverter}, ConverterParameter={x:Type local:RootViewModel}}" Value="True">
                                     <Setter Property="ContextMenu">
