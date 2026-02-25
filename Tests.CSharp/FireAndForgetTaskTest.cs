@@ -81,6 +81,38 @@ public class FireAndForgetTaskTest
         Assert.IsLessThan(100, stopwatch.ElapsedMilliseconds);
     }
 
+    // https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/async-scenarios#wait-for-multiple-tasks-to-complete
+    [TestMethod]
+    public async Task CallAsyncMethodWhenAll()
+    {
+        Stopwatch stopwatch = new();
+
+        stopwatch.Restart();
+        var t = AwaitableMethod();
+        await Task.WhenAll(t);
+        stopwatch.Stop();
+
+        Assert.IsGreaterThan(100, stopwatch.ElapsedMilliseconds);
+    }
+
+    [TestMethod]
+    public async Task FireAndForgetMethod_RunToEnd_WhenAllReturnsImmediately()
+    {
+        Stopwatch stopwatch = new();
+
+        stopwatch.Restart();
+        var t = AwaitableMethod();
+        await Task.Delay(DELAY_MILLISECONDS + 100);
+        stopwatch.Stop();
+        Assert.IsGreaterThan(100, stopwatch.ElapsedMilliseconds);
+
+        stopwatch.Restart();
+        await Task.WhenAll(t);
+        stopwatch.Stop();
+        Assert.IsLessThan(50, stopwatch.ElapsedMilliseconds);
+    }
+
+
     [TestMethod]
     public async Task AwaitableMethodIsAwaitableEventItsInTaskRun()
     {
@@ -100,11 +132,13 @@ public class FireAndForgetTaskTest
     /// </summary>
     private static async void FireAndForgetMethod()
     {
+        Console.WriteLine(nameof(FireAndForgetMethod));
         await Task.Delay(DELAY_MILLISECONDS);
     }
 
     private static async Task AwaitableMethod()
     {
+        Console.WriteLine(nameof(AwaitableMethod));
         await Task.Delay(DELAY_MILLISECONDS);
     }
 }
