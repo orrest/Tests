@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/SmartTextBoxDemo/">
+    <Project Path="SmartTextBoxDemo/DemoApp/DemoApp.csproj" />
+    <Project Path="SmartTextBoxDemo/JamesSmartTextBox/JamesSmartTextBox.csproj" />
+  </Folder>
+  <Project Path="Tests.CSharp/Tests.CSharp.csproj" />
+  <Project Path="Tests.Udp/Tests.Udp.csproj" />
+  <Project Path="Tests.Wpf/Tests.Wpf.csproj" />
+</Solution>
