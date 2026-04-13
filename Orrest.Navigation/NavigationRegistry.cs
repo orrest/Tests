@@ -1,6 +1,6 @@
-﻿namespace Tests.Wpf.Models;
+namespace Orrest.Navigation;
 
-public class ViewRegistryItem
+public class NavigationRegistry
 {
     public required string Name { get; set; }
     public required Type ViewType { get; set; }

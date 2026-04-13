@@ -1,13 +1,12 @@
-﻿using Bogus;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Orrest.Navigation;
 using Tests.Wpf.Border;
 using Tests.Wpf.Controls;
 using Tests.Wpf.CustomizedMessageBox;
 using Tests.Wpf.DesignTimeData;
 using Tests.Wpf.DragDrop;
 using Tests.Wpf.Medias;
-using Tests.Wpf.Models;
 using Tests.Wpf.ProgressMask;
 using Tests.Wpf.Snackbar;
 using Tests.Wpf.Themes;
@@ -44,20 +43,5 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
             }
         );
-    }
-
-    public static void AddSingletonForNavigation(this IServiceCollection sc, Type view, Type viewModel)
-    {
-        var viewItem = new ViewRegistryItem()
-        {
-            Name = view.Name,
-            ViewType = view,
-            ViewModelType = viewModel
-        };
-
-        sc.AddSingleton(viewItem);
-
-        sc.AddSingleton(view);
-        sc.AddSingleton(viewModel);
     }
 }

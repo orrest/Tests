@@ -8,6 +8,8 @@
     <Project Path="SmartTextBoxDemo/DemoApp/DemoApp.csproj" />
     <Project Path="SmartTextBoxDemo/JamesSmartTextBox/JamesSmartTextBox.csproj" />
   </Folder>
+  <Project Path="Orrest.Controls/Orrest.Controls.csproj" Id="b7fe9f8c-db43-421a-9573-0d20cfbb06c3" />
+  <Project Path="Orrest.Navigation/Orrest.Navigation.csproj" Id="1345722b-3326-4acf-afba-7938f4b51886" />
   <Project Path="Tests.CSharp/Tests.CSharp.csproj" />
   <Project Path="Tests.Udp/Tests.Udp.csproj" />
   <Project Path="Tests.Wpf/Tests.Wpf.csproj" />

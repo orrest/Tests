@@ -1,9 +1,9 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
+using Orrest.Navigation;
 using Tests.Wpf.Constants;
-using Tests.Wpf.Models;
 
 namespace Tests.Wpf;
 
@@ -12,13 +12,13 @@ public partial class MainViewModel : ObservableRecipient
     private readonly IServiceProvider serviceProvider;
 
     [ObservableProperty]
-    public partial ObservableCollection<ViewItem> ViewItems { get; set; }
+    public partial ObservableCollection<NavigationItem> ViewItems { get; set; }
 
     [ObservableProperty]
     public partial string ToastMessage { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial ViewItem? SelectedView { get; set; }
+    public partial NavigationItem? SelectedView { get; set; }
 
     [ObservableProperty]
     public partial object? ContentView { get; set; }
@@ -65,7 +65,7 @@ public partial class MainViewModel : ObservableRecipient
 
     private void Navigate(string viewName)
     {
-        var views = this.serviceProvider.GetService<IEnumerable<ViewRegistryItem>>();
+        var views = this.serviceProvider.GetService<IEnumerable<NavigationRegistry>>();
         var viewItem = views?.LastOrDefault(v => v.Name == viewName);
         if (viewItem is null)
         {
@@ -81,7 +81,7 @@ public partial class MainViewModel : ObservableRecipient
         ContentView = view;
     }
 
-    partial void OnSelectedViewChanged(ViewItem? value)
+    partial void OnSelectedViewChanged(NavigationItem? value)
     {
         if (value is null)
         {
