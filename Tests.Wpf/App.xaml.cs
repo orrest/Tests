@@ -1,4 +1,4 @@
-﻿using System.Windows;
+using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Tests.Wpf.Extensions;
@@ -17,5 +17,6 @@ public partial class App : Application
 
         var mainWindow = host.Services.GetRequiredService<MainWindow>();
         mainWindow.Show();
+
     }
 }
