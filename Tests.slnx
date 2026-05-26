@@ -13,4 +13,5 @@
   <Project Path="Tests.CSharp/Tests.CSharp.csproj" />
   <Project Path="Tests.Udp/Tests.Udp.csproj" />
   <Project Path="Tests.Wpf/Tests.Wpf.csproj" />
+  <Project Path="Tests.MSDI/Tests.MSDI.csproj" />
 </Solution>
