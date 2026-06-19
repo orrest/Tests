@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orrest.Navigation;
+using Tests.Wpf.Button;
 using Tests.Wpf.Border;
 using Tests.Wpf.Controls;
 using Tests.Wpf.CustomizedMessageBox;
@@ -41,6 +42,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(StylePriorityView), typeof(StylePriorityViewModel));
                 sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
+                sc.AddSingletonForNavigation(typeof(ButtonView), typeof(ButtonViewModel));
                 sc.AddSingletonForNavigation(typeof(ThemeSwitcherView), typeof(ThemeSwitcherViewModel));
             }
         );
