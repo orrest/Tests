@@ -40,6 +40,7 @@ public partial class MainViewModel : ObservableRecipient
             new("Progress", "ProgressMaskView"),
             new("Snackbar", "SnackbarView"),
             new("Style priority", "StylePriorityView"),
+            new("Theme switcher", "ThemeSwitcherView"),
             new("Tree View", "TreeView"),
             new("Visibility", "VisibilityView"),
         ];

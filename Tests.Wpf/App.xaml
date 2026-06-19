@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:converters="clr-namespace:Tests.Wpf.Converters"
              xmlns:local="clr-namespace:Tests.Wpf"
-             xmlns:system="clr-namespace:System;assembly=mscorlib">
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             ThemeMode="System">
     <Application.Resources>
         <ResourceDictionary>
             <Thickness x:Key="ThicknessSmallLeft">5,0,0,0</Thickness>
@@ -36,7 +37,6 @@
             <converters:IsTypeConverter x:Key="IsTypeConverter" />
 
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
                 <ResourceDictionary Source="/Themes/TabItem.xaml" />
                 <ResourceDictionary Source="/Themes/ProgressMask.xaml" />
                 <ResourceDictionary Source="/Themes/CellTexts.xaml" />

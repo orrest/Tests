@@ -41,6 +41,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(StylePriorityView), typeof(StylePriorityViewModel));
                 sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
+                sc.AddSingletonForNavigation(typeof(ThemeSwitcherView), typeof(ThemeSwitcherViewModel));
             }
         );
     }
