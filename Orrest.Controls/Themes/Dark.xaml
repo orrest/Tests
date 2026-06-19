@@ -1,0 +1,70 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  ── 基础色 ────────────────────────────────────────────  -->
+    <Brush x:Key="ForegroundColor">#E5E5E5</Brush>
+    <Brush x:Key="ForegroundLeadColor">#A1A1AA</Brush>
+    <Brush x:Key="BackgroundColor">Transparent</Brush>
+    <Brush x:Key="MutedColor">#A0A0A9</Brush>
+    <Brush x:Key="BorderColor">#353535</Brush>
+    <Brush x:Key="BorderColor60">#262626</Brush>
+    <Brush x:Key="BorderColor30">#4C353535</Brush>
+    <Brush x:Key="OutlineColor">#3E3E3E</Brush>
+    <Brush x:Key="GhostColor">#252525</Brush>
+    <Brush x:Key="GhostHoverColor">#7F252525</Brush>
+    <Brush x:Key="GhostHoverColor50">#33252525</Brush>
+
+    <!--  ── 主题色 ────────────────────────────────────────────  -->
+    <Brush x:Key="PrimaryColor">#E5E5E5</Brush>
+    <Brush x:Key="PrimaryColor75">#BFE5E5E5</Brush>
+    <Brush x:Key="PrimaryColor50">#80E5E5E5</Brush>
+    <Brush x:Key="PrimaryColor10">#19E5E5E5</Brush>
+    <Brush x:Key="PrimaryForegroundColor">#18181B</Brush>
+    <Brush x:Key="SecondaryColor">#2C2C30</Brush>
+    <Brush x:Key="SecondaryColor75">#BF2C2C30</Brush>
+    <Brush x:Key="SecondaryColor50">#802C2C30</Brush>
+    <Brush x:Key="SecondaryForegroundColor">#E5E5E5</Brush>
+    <Brush x:Key="DestructiveColor">#9D4042</Brush>
+    <Brush x:Key="DestructiveColor75">#BF9D4042</Brush>
+    <Brush x:Key="DestructiveColor50">#809D4042</Brush>
+    <Brush x:Key="DestructiveColor10">#199D4042</Brush>
+    <Brush x:Key="DestructiveForegroundColor">#E5E5E5</Brush>
+
+    <!--  ── 通知色 ────────────────────────────────────────────  -->
+    <Brush x:Key="InfoColor">#2979FF</Brush>
+    <Brush x:Key="InfoColor60">#992979FF</Brush>
+    <Brush x:Key="InfoColor20">#332979FF</Brush>
+    <Brush x:Key="InfoColor10">#192979FF</Brush>
+    <Brush x:Key="InfoColor5">#0D2979FF</Brush>
+    <Brush x:Key="SuccessColor">#00C853</Brush>
+    <Brush x:Key="SuccessColor60">#9900C853</Brush>
+    <Brush x:Key="SuccessColor20">#3300C853</Brush>
+    <Brush x:Key="SuccessColor10">#1900C853</Brush>
+    <Brush x:Key="SuccessColor5">#0D00C853</Brush>
+    <Brush x:Key="WarningColor">#FFD600</Brush>
+    <Brush x:Key="WarningColor60">#99FFD600</Brush>
+    <Brush x:Key="WarningColor20">#33FFD600</Brush>
+    <Brush x:Key="WarningColor10">#19FFD600</Brush>
+    <Brush x:Key="WarningColor5">#0DFFD600</Brush>
+    <Brush x:Key="ErrorColor">#FF1744</Brush>
+    <Brush x:Key="ErrorColor60">#99FF1744</Brush>
+    <Brush x:Key="ErrorColor20">#33FF1744</Brush>
+    <Brush x:Key="ErrorColor10">#19FF1744</Brush>
+    <Brush x:Key="ErrorColor5">#0DFF1744</Brush>
+
+    <!--  ── 特定控件色 ────────────────────────────────────────  -->
+    <Brush x:Key="BusyAreaOverlayColor">#1971717A</Brush>
+    <Brush x:Key="CardBackgroundColor">#171717</Brush>
+    <Brush x:Key="DialogOverlayColor">#000000</Brush>
+    <Brush x:Key="DialogBackgroundColor">#0A0A0A</Brush>
+    <Brush x:Key="TitleBarBackgroundColor">#0A0A0A</Brush>
+    <Brush x:Key="WindowBackgroundColor">#0A0A0A</Brush>
+    <Brush x:Key="WindowButtonHoverColor">#0DFAFAFA</Brush>
+    <Brush x:Key="SidebarBackgroundColor">#0A0A0A</Brush>
+    <Brush x:Key="SwitchBackgroundColor">#282828</Brush>
+    <Brush x:Key="SwitchForegroundColor">#FAFAFA</Brush>
+    <Brush x:Key="TabItemSelectedColor">#09090B</Brush>
+    <Brush x:Key="TabItemsBackgroundColor">#27272A</Brush>
+
+</ResourceDictionary>

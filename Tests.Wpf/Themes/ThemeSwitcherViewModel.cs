@@ -1,5 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows;
+using Orrest.Controls.Themes;
 using Tests.Wpf.Constants;
 
 namespace Tests.Wpf.Themes;
@@ -21,7 +21,7 @@ public partial class ThemeSwitcherViewModel : ObservableRecipient
     public ThemeSwitcherViewModel()
     {
         // Reflect the current theme mode on startup
-        var current = Application.Current.ThemeMode;
+        var current = ThemeManager.CurrentMode;
         if (current == ThemeMode.Light)
         {
             IsLightSelected = true;
@@ -87,8 +87,8 @@ public partial class ThemeSwitcherViewModel : ObservableRecipient
             IsSystemSelected = false;
         }
 
-        // Apply the theme
-        Application.Current.ThemeMode = mode;
+        // Apply the theme via ThemeManager
+        ThemeManager.SwitchTheme(mode);
         CurrentThemeText = name;
 
         // Notify via toast

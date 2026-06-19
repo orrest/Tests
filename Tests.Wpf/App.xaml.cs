@@ -11,6 +11,8 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        Orrest.Controls.Themes.ThemeManager.Initialize(Orrest.Controls.Themes.ThemeMode.System);
+
         var hostBuilder = Host.CreateDefaultBuilder().ConfigureViews();
 
         var host = hostBuilder.Build();
