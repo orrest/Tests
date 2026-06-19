@@ -48,4 +48,34 @@ public static class MsDiExtension
         sc.AddTransient(view);
         sc.AddSingleton(viewModel);
     }
+
+    public static void AddScopedForNavigation(this IServiceCollection sc, Type view, Type viewModel)
+    {
+        var registry = new NavigationRegistry()
+        {
+            Name = view.Name,
+            ViewType = view,
+            ViewModelType = viewModel
+        };
+
+        sc.AddSingleton(registry);
+
+        sc.AddScoped(view);
+        sc.AddScoped(viewModel);
+    }
+
+    public static void AddTransientViewScopedViewModelForNavigation(this IServiceCollection sc, Type view, Type viewModel)
+    {
+        var registry = new NavigationRegistry()
+        {
+            Name = view.Name,
+            ViewType = view,
+            ViewModelType = viewModel
+        };
+
+        sc.AddSingleton(registry);
+
+        sc.AddTransient(view);
+        sc.AddScoped(viewModel);
+    }
 }
