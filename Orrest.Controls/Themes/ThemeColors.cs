@@ -20,6 +20,7 @@ public class ThemeColors
     public Color GhostColor { get; init; }
     public Color GhostHoverColor { get; init; }
     public Color GhostHoverColor50 { get; init; }
+    public Color SelectionColor { get; init; }
 
     // ── 主题色 ──────────────────────────────────────────────
     public Color PrimaryColor { get; init; }

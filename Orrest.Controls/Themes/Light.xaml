@@ -14,6 +14,7 @@
     <Brush x:Key="GhostColor">#F5F5F5</Brush>
     <Brush x:Key="GhostHoverColor">#7FF5F5F5</Brush>
     <Brush x:Key="GhostHoverColor50">#33F5F5F5</Brush>
+    <Brush x:Key="SelectionColor">#0CE5E5E5</Brush>
 
     <!--  ── 主题色 ────────────────────────────────────────────  -->
     <Brush x:Key="PrimaryColor">#171717</Brush>

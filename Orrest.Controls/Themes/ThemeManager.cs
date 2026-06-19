@@ -135,6 +135,7 @@ public static class ThemeManager
             GhostColor = TryGetColor("GhostColor"),
             GhostHoverColor = TryGetColor("GhostHoverColor"),
             GhostHoverColor50 = TryGetColor("GhostHoverColor50"),
+            SelectionColor = TryGetColor("SelectionColor"),
 
             // Theme Colors
             PrimaryColor = TryGetColor("PrimaryColor"),

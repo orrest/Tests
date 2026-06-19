@@ -1,0 +1,174 @@
+<UserControl
+    x:Class="Tests.Wpf.ControlsShowcase.ListViewShowcase"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Tests.Wpf.ControlsShowcase"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance local:ListViewShowcaseViewModel}"
+    d:DesignHeight="600"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel Margin="24">
+            <TextBlock
+                FontSize="20"
+                FontWeight="Bold"
+                Text="ListView Styles" />
+
+            <TextBlock
+                Margin="0,12,0,0"
+                FontSize="14"
+                Foreground="{DynamicResource ForegroundLeadColor}"
+                Text="ListView and ListViewItem styles inspired by shad-ui ListBox. Features: rounded corners, hover/selection overlay backgrounds, check icon on selected items, and disabled state." />
+
+            <!--  ── 启用/禁用切换 ─────────────────────────────────────  -->
+            <CheckBox
+                Margin="0,16,0,0"
+                Content="ListView enabled"
+                IsChecked="{Binding Path=IsEnabled}" />
+
+            <!--  ── 基础 ListView（静态项目）─────────────────────────────  -->
+            <Border
+                Margin="0,24,0,0"
+                Padding="16"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="Basic ListView (static items)" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource ForegroundLeadColor}"
+                        Text="Single-selection mode with simple string items." />
+
+                    <ListView
+                        Margin="0,12,0,0"
+                        Height="200"
+                        Width="300"
+                        HorizontalAlignment="Left"
+                        IsEnabled="{Binding Path=IsEnabled}">
+                        <ListViewItem Content="Inbox" />
+                        <ListViewItem Content="Starred" />
+                        <ListViewItem Content="Sent" />
+                        <ListViewItem Content="Drafts" />
+                        <ListViewItem Content="Spam" />
+                        <ListViewItem Content="Trash" />
+                    </ListView>
+                </StackPanel>
+            </Border>
+
+            <!--  ── 数据绑定 ListView ───────────────────────────────────  -->
+            <Border
+                Margin="0,24,0,0"
+                Padding="16"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="Data-bound ListView with DataTemplate" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource ForegroundLeadColor}"
+                        Text="ItemsSource bound to a ViewModel collection with custom item template." />
+
+                    <ListView
+                        Margin="0,12,0,0"
+                        Height="200"
+                        Width="300"
+                        HorizontalAlignment="Left"
+                        IsEnabled="{Binding Path=IsEnabled}"
+                        ItemsSource="{Binding Path=Contacts}"
+                        SelectedItem="{Binding Path=SelectedContact}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse
+                                        Width="24"
+                                        Height="24"
+                                        Margin="0,0,8,0"
+                                        Fill="{DynamicResource PrimaryColor10}" />
+                                    <TextBlock
+                                        VerticalAlignment="Center"
+                                        FontWeight="Medium"
+                                        Text="{Binding Path=Name}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <TextBlock
+                        Margin="0,8,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource ForegroundLeadColor}">
+                        <Run Text="Selected: " />
+                        <Run Text="{Binding Path=SelectedContact.Name, Mode=OneWay}" />
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <!--  ── 多选 ListView ───────────────────────────────────────  -->
+            <Border
+                Margin="0,24,0,0"
+                Padding="16"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="Multi-selection ListView" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource ForegroundLeadColor}"
+                        Text="SelectionMode=Multiple — each selected item shows a check icon." />
+
+                    <ListView
+                        Margin="0,12,0,0"
+                        Height="200"
+                        Width="300"
+                        HorizontalAlignment="Left"
+                        IsEnabled="{Binding Path=IsEnabled}"
+                        ItemsSource="{Binding Path=Categories}"
+                        SelectionMode="Multiple">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=Label}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
+            </Border>
+
+            <!--  ── 禁用状态演示 ────────────────────────────────────────  -->
+            <Border
+                Margin="0,24,0,0"
+                Padding="16"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="Disabled state (toggle above checkbox)" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource ForegroundLeadColor}"
+                        Text="Uncheck 'ListView enabled' above to see the disabled appearance (0.5 opacity)." />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

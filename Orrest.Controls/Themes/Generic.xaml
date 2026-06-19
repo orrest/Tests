@@ -4,6 +4,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/Button/ButtonStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/ListView/ListViewStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

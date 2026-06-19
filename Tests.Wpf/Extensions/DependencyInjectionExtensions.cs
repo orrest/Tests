@@ -13,6 +13,7 @@ using Tests.Wpf.Snackbar;
 using Tests.Wpf.Themes;
 using Tests.Wpf.Tree;
 using Tests.Wpf.Validations;
+using Tests.Wpf.ControlsShowcase;
 
 namespace Tests.Wpf.Extensions;
 
@@ -44,6 +45,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
                 sc.AddSingletonForNavigation(typeof(ButtonView), typeof(ButtonViewModel));
                 sc.AddSingletonForNavigation(typeof(ThemeSwitcherView), typeof(ThemeSwitcherViewModel));
+                sc.AddSingletonForNavigation(typeof(ListViewShowcase), typeof(ListViewShowcaseViewModel));
             }
         );
     }
