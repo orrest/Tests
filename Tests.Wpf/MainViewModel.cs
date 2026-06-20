@@ -32,6 +32,7 @@ public partial class MainViewModel : ObservableRecipient
             new("Audio player", "PlayerView"),
             new("Border", "BorderView"),
             new("Button styles", "ButtonView"),
+            new("CheckBox", "CheckBoxShowcase"),
             new("Customized tab item", "CustomizedTabItemView"),
             new("Data validation", "ValidationView"),
             new("Design time data", "DesignTimeDataView"),
