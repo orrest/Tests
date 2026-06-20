@@ -44,17 +44,19 @@
                             CornerRadius="8"
                             Opacity="0" />
                         <!--  内容区  -->
-                        <DockPanel LastChildFill="True" Margin="{TemplateBinding Padding}">
+                        <DockPanel
+                            Margin="{TemplateBinding Padding}"
+                            LastChildFill="True">
                             <!--  Check 图标（选中时显示）  -->
                             <Path
                                 x:Name="CheckIcon"
+                                Width="12"
+                                Height="12"
+                                Margin="4,0,0,0"
                                 Data="{StaticResource CheckIconGeometry}"
                                 DockPanel.Dock="Right"
                                 Fill="{DynamicResource ForegroundColor}"
-                                Height="12"
-                                Margin="4,0,0,0"
                                 Stretch="Uniform"
-                                Width="12"
                                 Visibility="Collapsed" />
                             <!--  ContentPresenter  -->
                             <ContentPresenter

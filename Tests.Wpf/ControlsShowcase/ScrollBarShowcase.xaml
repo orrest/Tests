@@ -1,0 +1,207 @@
+<UserControl
+    x:Class="Tests.Wpf.ControlsShowcase.ScrollBarShowcase"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Tests.Wpf.ControlsShowcase"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DataContext="{d:DesignInstance local:ScrollBarShowcaseViewModel}"
+    d:DesignHeight="600"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel Margin="24">
+            <TextBlock
+                FontSize="20"
+                FontWeight="Bold"
+                Text="ScrollBar Styles" />
+
+            <TextBlock
+                Margin="0,12,0,0"
+                FontSize="14"
+                Foreground="{DynamicResource ForegroundLeadColor}"
+                Text="ScrollBar and ScrollViewer styles inspired by shad-ui. Features: thin rounded thumb bar, hover expansion, no line buttons, transparent repeat buttons for page scrolling." />
+
+            <!--  ── 垂直 ScrollBar 演示 ──────────────────────────────  -->
+            <Border
+                Margin="0,24,0,0"
+                Padding="16"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="Vertical ScrollBar" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource ForegroundLeadColor}"
+                        Text="A ScrollViewer with enough content to trigger the vertical scrollbar." />
+
+                    <ScrollViewer
+                        Margin="0,12,0,0"
+                        Height="200"
+                        Width="300"
+                        HorizontalAlignment="Left"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <ItemsControl ItemsSource="{Binding Path=VerticalItems}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock
+                                            Margin="0,4"
+                                            FontSize="14"
+                                            Text="{Binding Path=Text}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+            <!--  ── 水平 ScrollBar 演示 ──────────────────────────────  -->
+            <Border
+                Margin="0,24,0,0"
+                Padding="16"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="Horizontal ScrollBar" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource ForegroundLeadColor}"
+                        Text="A ScrollViewer with wide content to trigger the horizontal scrollbar." />
+
+                    <ScrollViewer
+                        Margin="0,12,0,0"
+                        Height="80"
+                        HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Disabled">
+                        <StackPanel Orientation="Horizontal">
+                            <ItemsControl ItemsSource="{Binding Path=HorizontalItems}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border
+                                            Width="150"
+                                            Height="60"
+                                            Margin="4,0"
+                                            Background="{DynamicResource GhostColor}"
+                                            CornerRadius="8">
+                                            <TextBlock
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontSize="14"
+                                                FontWeight="Medium"
+                                                Text="{Binding Path=Text}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+            <!--  ── 双向 ScrollBar 演示 ──────────────────────────────  -->
+            <Border
+                Margin="0,24,0,0"
+                Padding="16"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="Both Vertical &amp; Horizontal ScrollBars" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource ForegroundLeadColor}"
+                        Text="A ScrollViewer with content that exceeds both dimensions." />
+
+                    <ScrollViewer
+                        Margin="0,12,0,0"
+                        Height="200"
+                        Width="300"
+                        HorizontalAlignment="Left"
+                        HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Auto">
+                        <Grid Width="600" Height="600">
+                            <ItemsControl ItemsSource="{Binding Path=GridItems}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="4" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border
+                                            Margin="4"
+                                            Background="{DynamicResource GhostColor}"
+                                            CornerRadius="8">
+                                            <TextBlock
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontSize="12"
+                                                FontWeight="Medium"
+                                                Margin="8"
+                                                Text="{Binding Path=Text}" />
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </ScrollViewer>
+                </StackPanel>
+            </Border>
+
+            <!--  ── 嵌入 ListView 的 ScrollBar ───────────────────────  -->
+            <Border
+                Margin="0,24,0,0"
+                Padding="16"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        FontSize="16"
+                        FontWeight="SemiBold"
+                        Text="ScrollBar inside ListView" />
+
+                    <TextBlock
+                        Margin="0,4,0,0"
+                        FontSize="12"
+                        Foreground="{DynamicResource ForegroundLeadColor}"
+                        Text="ListView already uses ScrollViewer internally — the new ScrollBar style applies automatically." />
+
+                    <ListView
+                        Margin="0,12,0,0"
+                        Height="150"
+                        Width="300"
+                        HorizontalAlignment="Left"
+                        ItemsSource="{Binding Path=Contacts}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock FontWeight="Medium" Text="{Binding Path=Name}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Tests.Wpf.Models;
 
 namespace Tests.Wpf.ControlsShowcase;
 
@@ -29,16 +30,6 @@ public partial class ListViewShowcaseViewModel : ObservableObject
         new("Sports"),
         new("Health"),
     ];
-}
-
-public class ContactItem
-{
-    public string Name { get; }
-
-    public ContactItem(string name)
-    {
-        Name = name;
-    }
 }
 
 public class CategoryItem
