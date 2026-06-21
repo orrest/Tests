@@ -44,6 +44,7 @@ public partial class MainViewModel : ObservableRecipient
             new("Snackbar", "SnackbarView"),
             new("Style priority", "StylePriorityView"),
             new("Theme switcher", "ThemeSwitcherView"),
+            new("TextBox", "TextBoxShowcase"),
             new("ListView", "ListViewShowcase"),
             new("Tree View", "TreeView"),
             new("Visibility", "VisibilityView"),

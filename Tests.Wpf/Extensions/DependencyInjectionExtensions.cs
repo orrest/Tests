@@ -48,6 +48,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(ListViewShowcase), typeof(ListViewShowcaseViewModel));
                 sc.AddSingletonForNavigation(typeof(ScrollBarShowcase), typeof(ScrollBarShowcaseViewModel));
                 sc.AddSingletonForNavigation(typeof(CheckBoxShowcase), typeof(CheckBoxShowcaseViewModel));
+                sc.AddSingletonForNavigation(typeof(TextBoxShowcase), typeof(TextBoxShowcaseViewModel));
             }
         );
     }
