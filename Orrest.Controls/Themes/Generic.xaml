@@ -7,6 +7,7 @@
         <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/CheckBox/CheckBoxStyles.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/ListView/ListViewStyles.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/ScrollBar/ScrollBarStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/TabControl/TabControlStyles.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/TextBox/TextBoxStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 

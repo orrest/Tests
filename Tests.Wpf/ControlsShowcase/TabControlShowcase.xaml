@@ -1,0 +1,136 @@
+<UserControl x:Class="Tests.Wpf.ControlsShowcase.TabControlShowcase"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Tests.Wpf.ControlsShowcase"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DataContext="{d:DesignInstance local:TabControlShowcaseViewModel}"
+             d:DesignHeight="600" d:DesignWidth="800"
+             mc:Ignorable="d">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="24">
+            <!--  标题  -->
+            <TextBlock FontSize="20" FontWeight="Bold" Text="TabControl Styles" />
+            <TextBlock Margin="0,12,0,0" FontSize="14" Foreground="{DynamicResource ForegroundLeadColor}"
+                       Text="参考 shad-ui TabControl 组件实现的 WPF 隐式样式，支持选中、未选中、禁用状态及药丸指示器效果。" />
+
+            <!--  演示区：WrapPanel 自动换行排列  -->
+            <WrapPanel Margin="0,24,0,0" ItemWidth="360">
+
+                <!--  基础用法  -->
+                <Border Margin="8" Padding="16" Background="{DynamicResource SelectionColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontSize="16" FontWeight="SemiBold" Text="基础用法" />
+                        <TextBlock Margin="0,4,0,0" Foreground="{DynamicResource ForegroundLeadColor}" Text="三个选项卡的基本切换，选中项带有药丸背景指示器。" />
+                        <TabControl Margin="0,12,0,0">
+                            <TabItem Header="Preview">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="80">
+                                    <TextBlock FontSize="20" Text="Preview 内容" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Code">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="80">
+                                    <TextBlock FontSize="20" Text="Code 内容" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Settings">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="80">
+                                    <TextBlock FontSize="20" Text="Settings 内容" />
+                                </Border>
+                            </TabItem>
+                        </TabControl>
+                    </StackPanel>
+                </Border>
+
+                <!--  禁用选项卡  -->
+                <Border Margin="8" Padding="16" Background="{DynamicResource SelectionColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontSize="16" FontWeight="SemiBold" Text="禁用选项卡" />
+                        <TextBlock Margin="0,4,0,0" Foreground="{DynamicResource ForegroundLeadColor}" Text="禁用的选项卡文字半透明，不可交互。" />
+                        <TabControl Margin="0,12,0,0">
+                            <TabItem Header="Account">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="80">
+                                    <TextBlock FontSize="20" Text="Account 内容" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Password">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="80">
+                                    <TextBlock FontSize="20" Text="Password 内容" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Disabled" IsEnabled="False" />
+                        </TabControl>
+                    </StackPanel>
+                </Border>
+
+                <!--  多选项卡  -->
+                <Border Margin="8" Padding="16" Background="{DynamicResource SelectionColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontSize="16" FontWeight="SemiBold" Text="多选项卡" />
+                        <TextBlock Margin="0,4,0,0" Foreground="{DynamicResource ForegroundLeadColor}" Text="更多选项卡项，展示滚动和布局效果。" />
+                        <TabControl Margin="0,12,0,0">
+                            <TabItem Header="Dashboard">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="60">
+                                    <TextBlock FontSize="16" Text="Dashboard 面板概览" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Analytics">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="60">
+                                    <TextBlock FontSize="16" Text="Analytics 数据分析" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Reports">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="60">
+                                    <TextBlock FontSize="16" Text="Reports 报告导出" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Notifications">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="60">
+                                    <TextBlock FontSize="16" Text="Notifications 通知管理" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Settings">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="60">
+                                    <TextBlock FontSize="16" Text="Settings 系统设置" />
+                                </Border>
+                            </TabItem>
+                        </TabControl>
+                    </StackPanel>
+                </Border>
+
+                <!--  动态绑定  -->
+                <Border Margin="8" Padding="16" Background="{DynamicResource SelectionColor}" BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock FontSize="16" FontWeight="SemiBold" Text="动态绑定" />
+                        <TextBlock Margin="0,4,0,0" Foreground="{DynamicResource ForegroundLeadColor}" Text="通过 ViewModel 绑定 SelectedIndex，动态切换选项卡。" />
+                        <TabControl Margin="0,12,0,0" SelectedIndex="{Binding SelectedTabIndex}">
+                            <TabItem Header="First">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="60">
+                                    <TextBlock FontSize="16" Text="第一个选项卡内容" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Second">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="60">
+                                    <TextBlock FontSize="16" Text="第二个选项卡内容" />
+                                </Border>
+                            </TabItem>
+                            <TabItem Header="Third">
+                                <Border BorderBrush="{DynamicResource BorderColor}" BorderThickness="1" CornerRadius="10" Padding="12" MinHeight="60">
+                                    <TextBlock FontSize="16" Text="第三个选项卡内容" />
+                                </Border>
+                            </TabItem>
+                        </TabControl>
+                        <StackPanel Margin="0,12,0,0" Orientation="Horizontal">
+                            <Button Margin="0,0,8,0" Padding="12,6" Content="← 上一页" Command="{Binding PreviousCommand}" />
+                            <Button Padding="12,6" Content="下一页 →" Command="{Binding NextCommand}" />
+                        </StackPanel>
+                        <TextBlock Margin="0,8,0,0" Foreground="{DynamicResource ForegroundLeadColor}">
+                            <Run Text="SelectedIndex = " /><Run Text="{Binding SelectedTabIndex, Mode=OneWay}" />
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+            </WrapPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

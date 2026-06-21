@@ -46,6 +46,7 @@ public partial class MainViewModel : ObservableRecipient
             new("Theme switcher", "ThemeSwitcherView"),
             new("TextBox", "TextBoxShowcase"),
             new("ListView", "ListViewShowcase"),
+            new("TabControl", "TabControlShowcase"),
             new("Tree View", "TreeView"),
             new("Visibility", "VisibilityView"),
         ];
