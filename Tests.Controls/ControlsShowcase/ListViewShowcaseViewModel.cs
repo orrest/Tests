@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Tests.Wpf.Models;
+using Tests.Controls.Models;
 
-namespace Tests.Wpf.ControlsShowcase;
+namespace Tests.Controls.ControlsShowcase;
 
 public partial class ListViewShowcaseViewModel : ObservableObject
 {

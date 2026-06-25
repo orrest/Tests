@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 // ReSharper disable once CheckNamespace
-namespace Tests.Wpf.ControlsShowcase;
+namespace Tests.Controls.ControlsShowcase;
 
 public partial class TabControlShowcaseViewModel : ObservableObject
 {

@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Tests.Wpf.Button;
+namespace Tests.Controls.Button;
 
 public partial class ButtonViewModel : ObservableRecipient
 {

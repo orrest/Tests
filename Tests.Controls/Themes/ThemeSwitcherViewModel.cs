@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Orrest.Controls.Themes;
-using Tests.Wpf.Constants;
+using Tests.Controls.Constants;
 
-namespace Tests.Wpf.Themes;
+namespace Tests.Controls.Themes;
 
 public partial class ThemeSwitcherViewModel : ObservableRecipient
 {

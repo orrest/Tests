@@ -3,9 +3,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.DependencyInjection;
 using Orrest.Navigation;
-using Tests.Wpf.Constants;
+using Tests.Controls.Constants;
 
-namespace Tests.Wpf;
+namespace Tests.Controls;
 
 public partial class MainViewModel : ObservableRecipient
 {
@@ -29,19 +29,13 @@ public partial class MainViewModel : ObservableRecipient
 
         ViewItems =
         [
-            new("Audio player", "PlayerView"),
-            new("Border", "BorderView"),
-            new("Customized tab item", "CustomizedTabItemView"),
-            new("Data validation", "ValidationView"),
-            new("Design time data", "DesignTimeDataView"),
-            new("Drag drop", "DragDropView"),
-            new("Grid splitter", "GridSplitterView"),
-            new("Message box", "MessageBoxView"),
-            new("Progress", "ProgressMaskView"),
-            new("Snackbar", "SnackbarView"),
-            new("Style priority", "StylePriorityView"),
-            new("Tree View", "TreeView"),
-            new("Visibility", "VisibilityView"),
+            new("Button styles", "ButtonView"),
+            new("CheckBox", "CheckBoxShowcase"),
+            new("ListView", "ListViewShowcase"),
+            new("ScrollBar", "ScrollBarShowcase"),
+            new("TabControl", "TabControlShowcase"),
+            new("TextBox", "TextBoxShowcase"),
+            new("Theme switcher", "ThemeSwitcherView"),
         ];
 
         Messenger.Register<string, string>(

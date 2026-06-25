@@ -1,7 +1,7 @@
 using System.Windows.Controls;
 
 // ReSharper disable once CheckNamespace
-namespace Tests.Wpf.ControlsShowcase;
+namespace Tests.Controls.ControlsShowcase;
 
 public partial class CheckBoxShowcase : UserControl
 {

@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace Tests.Wpf.ControlsShowcase;
+namespace Tests.Controls.ControlsShowcase;
 
 public partial class ScrollBarShowcase : UserControl
 {

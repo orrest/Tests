@@ -11,6 +11,7 @@
   <Project Path="Orrest.Controls/Orrest.Controls.csproj" />
   <Project Path="Orrest.JsonTextMap/Orrest.JsonTextMap.csproj" />
   <Project Path="Orrest.Navigation/Orrest.Navigation.csproj" />
+  <Project Path="Tests.Controls/Tests.Controls.csproj" />
   <Project Path="Tests.CSharp/Tests.CSharp.csproj" />
   <Project Path="Tests.MSDI/Tests.MSDI.csproj" />
   <Project Path="Tests.Udp/Tests.Udp.csproj" />

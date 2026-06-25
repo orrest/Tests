@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
@@ -11,25 +11,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Bogus" Version="35.6.5" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
-		<PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
-		<PackageReference Include="SoundFlow" Version="1.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="Files\*.*">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Threadings\" />
-	</ItemGroup>
-
-	<ItemGroup>
+		<ProjectReference Include="..\Orrest.Controls\Orrest.Controls.csproj" />
 		<ProjectReference Include="..\Orrest.Navigation\Orrest.Navigation.csproj" />
 	</ItemGroup>
 

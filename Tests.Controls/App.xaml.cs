@@ -1,9 +1,9 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Tests.Wpf.Extensions;
+using Tests.Controls.Extensions;
 
-namespace Tests.Wpf;
+namespace Tests.Controls;
 
 public partial class App : Application
 {
@@ -11,12 +11,13 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        Orrest.Controls.Themes.ThemeManager.Initialize(Orrest.Controls.Themes.ThemeMode.System);
+
         var hostBuilder = Host.CreateDefaultBuilder().ConfigureViews();
 
         var host = hostBuilder.Build();
 
         var mainWindow = host.Services.GetRequiredService<MainWindow>();
         mainWindow.Show();
-
     }
 }

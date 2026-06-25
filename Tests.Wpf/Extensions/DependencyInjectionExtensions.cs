@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orrest.Navigation;
-using Tests.Wpf.Button;
 using Tests.Wpf.Border;
 using Tests.Wpf.Controls;
 using Tests.Wpf.CustomizedMessageBox;
@@ -13,7 +12,6 @@ using Tests.Wpf.Snackbar;
 using Tests.Wpf.Themes;
 using Tests.Wpf.Tree;
 using Tests.Wpf.Validations;
-using Tests.Wpf.ControlsShowcase;
 
 namespace Tests.Wpf.Extensions;
 
@@ -43,13 +41,6 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(StylePriorityView), typeof(StylePriorityViewModel));
                 sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
-                sc.AddSingletonForNavigation(typeof(ButtonView), typeof(ButtonViewModel));
-                sc.AddSingletonForNavigation(typeof(ThemeSwitcherView), typeof(ThemeSwitcherViewModel));
-                sc.AddSingletonForNavigation(typeof(ListViewShowcase), typeof(ListViewShowcaseViewModel));
-                sc.AddSingletonForNavigation(typeof(ScrollBarShowcase), typeof(ScrollBarShowcaseViewModel));
-                sc.AddSingletonForNavigation(typeof(CheckBoxShowcase), typeof(CheckBoxShowcaseViewModel));
-                sc.AddSingletonForNavigation(typeof(TextBoxShowcase), typeof(TextBoxShowcaseViewModel));
-                sc.AddSingletonForNavigation(typeof(TabControlShowcase), typeof(TabControlShowcaseViewModel));
             }
         );
     }

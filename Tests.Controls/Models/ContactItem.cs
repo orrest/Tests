@@ -1,4 +1,4 @@
-﻿namespace Tests.Wpf.Models;
+namespace Tests.Controls.Models;
 
 public class ContactItem
 {

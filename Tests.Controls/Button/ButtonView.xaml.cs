@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace Tests.Wpf.Button;
+namespace Tests.Controls.Button;
 
 public partial class ButtonView : UserControl
 {

@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace Tests.Wpf.Themes;
+namespace Tests.Controls.Themes;
 
 public partial class ThemeSwitcherView : UserControl
 {
