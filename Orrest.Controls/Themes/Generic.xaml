@@ -9,6 +9,7 @@
         <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/ScrollBar/ScrollBarStyles.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/TabControl/TabControlStyles.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/TextBox/TextBoxStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Orrest.Controls;component/Window/WindowStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
