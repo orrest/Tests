@@ -7,6 +7,7 @@ using Tests.Wpf.CustomizedMessageBox;
 using Tests.Wpf.DesignTimeData;
 using Tests.Wpf.DragDrop;
 using Tests.Wpf.Medias;
+using Tests.Wpf.ModelNotification;
 using Tests.Wpf.ProgressMask;
 using Tests.Wpf.Snackbar;
 using Tests.Wpf.Themes;
@@ -41,6 +42,12 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(StylePriorityView), typeof(StylePriorityViewModel));
                 sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
+
+                // Model notification demo - 三个子 ViewModel 也需注册，组合根 VM 通过 DI 注入它们
+                sc.AddSingleton<DirectUserViewModel>();
+                sc.AddSingleton<WrappedUserViewModel>();
+                sc.AddSingleton<DelegateUserViewModel>();
+                sc.AddSingletonForNavigation(typeof(ModelNotificationView), typeof(ModelNotificationViewModel));
             }
         );
     }

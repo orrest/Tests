@@ -37,6 +37,7 @@ public partial class MainViewModel : ObservableRecipient
             new("Drag drop", "DragDropView"),
             new("Grid splitter", "GridSplitterView"),
             new("Message box", "MessageBoxView"),
+            new("Model notification", "ModelNotificationView"),
             new("Progress", "ProgressMaskView"),
             new("Snackbar", "SnackbarView"),
             new("Style priority", "StylePriorityView"),

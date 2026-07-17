@@ -1,0 +1,209 @@
+<UserControl x:Class="Tests.Wpf.ModelNotification.ModelNotificationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Tests.Wpf.ModelNotification"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DataContext="{d:DesignInstance Type=local:ModelNotificationViewModel}"
+             d:DesignHeight="1000"
+             d:DesignWidth="900"
+             Foreground="#222222"
+             mc:Ignorable="d">
+    <ScrollViewer>
+        <StackPanel Margin="10" Background="Transparent">
+
+            <!--  说明  -->
+            <GroupBox Header="Model 变化 → ViewModel 通知的三种方式（含嵌套 Address + 计算属性）" Margin="0,0,0,10">
+                <TextBlock TextWrapping="Wrap" Foreground="#333333" LineHeight="22">
+                    每个 GroupBox 演示一种方式，统一含嵌套 AddressModel + 三种计算属性。下面统一可交互：
+                    <LineBreak/>
+                    • 编辑 Name/Age/City/Country/ZipCode —— 双向绑定 + 实时刷新（UpdateSourceTrigger=PropertyChanged）；
+                    <LineBreak/>
+                    • <Run Foreground="#1F4E79" FontWeight="Bold">IsAdult</Run>
+                    <Run Foreground="#333333">/ </Run>
+                    <Run Foreground="#1F4E79" FontWeight="Bold">FullAddress</Run>
+                    是 Model 层计算属性（[NotifyPropertyChangedFor] 自动联动）；
+                    <LineBreak/>
+                    • <Run Foreground="#922B21" FontWeight="Bold">Summary</Run>
+                    是 VM 层跨层计算属性（依赖 Name+Age+City+Country），观察三种方式刷新差异；
+                    <LineBreak/>
+                    • 点 "Replace Model" / "Replace Address" / "Modify from background" —— 验证嵌套实例替换的订阅迁移与全链路通知。
+                </TextBlock>
+            </GroupBox>
+
+            <!-- ============================================================ -->
+            <!--  方式①：直接暴露 Model                                          -->
+            <!-- ============================================================ -->
+            <GroupBox Header="方式① Direct —— View 直接绑定 Model 深路径 {Binding User.Address.City}"
+                       Margin="0,0,0,10"
+                       DataContext="{Binding Direct}">
+                <StackPanel>
+                    <TextBlock Margin="0,0,0,6"
+                               Foreground="#1B5E20"
+                               TextWrapping="Wrap">
+                        VM 直接暴露 UserModel，嵌套深链路 User.Address.City 自动可用（Model 链路自通，VM 无需转发）。
+                        <LineBreak/>
+                        <Run Foreground="#922B21" FontWeight="Bold">局限</Run>
+                        <Run Foreground="#1B5E20">：Summary 是 VM 层计算属性，Direct 方式不订阅 Model 内部变化，故编辑 Name/Age/City 时 Summary 不会实时刷新，仅替换 User 时才更新。</Run>
+                    </TextBlock>
+
+                    <!--  User 区  -->
+                    <Label Content="Name"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding User.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Age"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding User.Age, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <!--  嵌套 Address 区  -->
+                    <Label Content="City (嵌套)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding User.Address.City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Country (嵌套)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding User.Address.Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="ZipCode (嵌套)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding User.Address.ZipCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <!--  计算属性显示  -->
+                    <StackPanel Margin="0,8,0,8" Orientation="Horizontal">
+                        <TextBlock Foreground="#1F4E79" Text="IsAdult (Model层): "/>
+                        <TextBlock Foreground="#154360" FontWeight="Bold" Text="{Binding User.IsAdult}"/>
+                    </StackPanel>
+                    <TextBlock Margin="0,0,0,4"
+                               Foreground="#1F4E79"
+                               Text="{Binding User.Address.FullAddress, StringFormat='FullAddress (Model层): {0}'}"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Margin="0,0,0,8"
+                               Foreground="#922B21"
+                               Text="{Binding Summary, StringFormat='Summary (VM层): {0}'}"
+                               TextWrapping="Wrap"/>
+
+                    <!--  操作  -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Command="{Binding ReplaceUserCommand}" Content="Replace Model" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ReplaceAddressCommand}" Content="Replace Address" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ModifyFromBackgroundCommand}" Content="Modify from background"/>
+                    </StackPanel>
+
+                    <TextBlock Foreground="#666666">
+                        <Run Text="{Binding ModelId, StringFormat='Model HashCode: {0}   ', Mode=OneWay}"/>
+                        <Run Text="{Binding AddressId, StringFormat='Address HashCode: {0}', Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- ============================================================ -->
+            <!--  方式②：包装属性 + 手写转发                                     -->
+            <!-- ============================================================ -->
+            <GroupBox Header="方式② Wrapped —— 代理属性 {Binding City}，手写 switch 转发（含嵌套订阅）"
+                       Margin="0,0,0,10"
+                       DataContext="{Binding Wrapped}">
+                <StackPanel>
+                    <TextBlock Margin="0,0,0,6"
+                               Foreground="#1B5E20"
+                               TextWrapping="Wrap">
+                        VM 用代理属性包装 User + Address，View 看不到 Model。
+                        <LineBreak/>
+                        <Run Foreground="#922B21" FontWeight="Bold">嵌套要点</Run>
+                        <Run Foreground="#1B5E20">：Address 是 Model 内部子对象，需额外订阅 Address.PropertyChanged 并在 switch 中转发；替换 Address 时必须解绑旧实例、绑新实例、刷新所有受影响属性。</Run>
+                    </TextBlock>
+
+                    <!--  User 区  -->
+                    <Label Content="Name"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Age"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding Age, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <!--  嵌套 Address 区  -->
+                    <Label Content="City (嵌套)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Country (嵌套)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="ZipCode (嵌套)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding ZipCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <!--  计算属性显示  -->
+                    <StackPanel Margin="0,8,0,8" Orientation="Horizontal">
+                        <TextBlock Foreground="#1F4E79" Text="IsAdult (Model层): "/>
+                        <TextBlock Foreground="#154360" FontWeight="Bold" Text="{Binding IsAdult}"/>
+                    </StackPanel>
+                    <TextBlock Margin="0,0,0,4"
+                               Foreground="#1F4E79"
+                               Text="{Binding FullAddress, StringFormat='FullAddress (Model层): {0}'}"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Margin="0,0,0,8"
+                               Foreground="#922B21"
+                               Text="{Binding Summary, StringFormat='Summary (VM层): {0}'}"
+                               TextWrapping="Wrap"/>
+
+                    <!--  操作  -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Command="{Binding ReplaceUserCommand}" Content="Replace Model" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ReplaceAddressCommand}" Content="Replace Address" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ModifyFromBackgroundCommand}" Content="Modify from background"/>
+                    </StackPanel>
+
+                    <TextBlock Foreground="#666666">
+                        <Run Text="{Binding ModelId, StringFormat='Model HashCode: {0}   ', Mode=OneWay}"/>
+                        <Run Text="{Binding AddressId, StringFormat='Address HashCode: {0}', Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- ============================================================ -->
+            <!--  方式③：代理属性 + 通用 ForwardProperties                       -->
+            <!-- ============================================================ -->
+            <GroupBox Header="方式③ Delegate —— 代理属性 {Binding City}，用 ModelBinder.ForwardProperties 收敛嵌套样板"
+                       Margin="0,0,0,10"
+                       DataContext="{Binding Delegate}">
+                <StackPanel>
+                    <TextBlock Margin="0,0,0,6"
+                               Foreground="#1B5E20"
+                               TextWrapping="Wrap">
+                        代理属性结构同方式②，但用 Helpers/ModelBinder.ForwardProperties 一行声明 Model 多属性 → VM 属性（+派生）的映射，消除冗长 switch。
+                        <LineBreak/>
+                        嵌套时为外层 User 和内层 Address 各调一次 ForwardProperties；替换实例时重新调用即可重订阅。
+                    </TextBlock>
+
+                    <!--  User 区  -->
+                    <Label Content="Name"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Age"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding Age, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <!--  嵌套 Address 区  -->
+                    <Label Content="City (嵌套)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Country (嵌套)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="ZipCode (嵌套)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding ZipCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <!--  计算属性显示  -->
+                    <StackPanel Margin="0,8,0,8" Orientation="Horizontal">
+                        <TextBlock Foreground="#1F4E79" Text="IsAdult (Model层): "/>
+                        <TextBlock Foreground="#154360" FontWeight="Bold" Text="{Binding IsAdult}"/>
+                    </StackPanel>
+                    <TextBlock Margin="0,0,0,4"
+                               Foreground="#1F4E79"
+                               Text="{Binding FullAddress, StringFormat='FullAddress (Model层): {0}'}"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Margin="0,0,0,8"
+                               Foreground="#922B21"
+                               Text="{Binding Summary, StringFormat='Summary (VM层): {0}'}"
+                               TextWrapping="Wrap"/>
+
+                    <!--  操作  -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Command="{Binding ReplaceUserCommand}" Content="Replace Model" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ReplaceAddressCommand}" Content="Replace Address" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ModifyFromBackgroundCommand}" Content="Modify from background"/>
+                    </StackPanel>
+
+                    <TextBlock Foreground="#666666">
+                        <Run Text="{Binding ModelId, StringFormat='Model HashCode: {0}   ', Mode=OneWay}"/>
+                        <Run Text="{Binding AddressId, StringFormat='Address HashCode: {0}', Mode=OneWay}"/>
+                    </TextBlock>
+                </StackPanel>
+            </GroupBox>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
