@@ -116,6 +116,105 @@
                     </TextBox>
                 </StackPanel>
             </GroupBox>
+
+            <GroupBox Margin="0,20,0,0"
+                      Padding="10"
+                      Header="DataGrid with annotation-based validation and delete action">
+                <!--
+                    Tag holds the DataGrid's own DataContext (the ViewModel) so the
+                    row ContextMenu — which lives outside the visual tree and therefore
+                    cannot reach the DataGrid via AncestorType — can still bind to
+                    RemoveCommand through PlacementTarget.Tag.
+                    用 Tag 缓存 DataGrid 自身的 DataContext（ViewModel），
+                    行级 ContextMenu 不在可视化树中、无法用 AncestorType 找到 DataGrid，
+                    借助 PlacementTarget.Tag 即可拿到 RemoveCommand。
+                -->
+                <DataGrid Margin="0,8,0,0"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          HeadersVisibility="Column"
+                          ItemsSource="{Binding Items}"
+                          MinColumnWidth="80"
+                          Tag="{Binding DataContext, RelativeSource={RelativeSource Self}}">
+                    <DataGrid.Resources>
+                        <!--
+                            DataGridTemplateColumn generates an internal ContentPresenter with an empty-path
+                            Binding to the row item. When the row item implements INotifyDataErrorInfo, that
+                            ContentPresenter's Validation.HasError becomes true and paints the default red
+                            ErrorTemplate adorner (a Border filling the cell). Null its ErrorTemplate here.
+                            DataGridTemplateColumn 会生成一个内部 ContentPresenter，并绑定空路径 Binding 到行项。
+                            行项实现 INotifyDataErrorInfo 时，该 ContentPresenter 的 Validation.HasError 变为 true，
+                            画出默认红色 ErrorTemplate adorner（填满 cell 的 Border）。在此置空其 ErrorTemplate。
+                            Scope: DataGridTextColumn doesn't use ContentPresenter (it generates TextBlock
+                            directly), so this implicit style only affects template columns.
+                            作用域：DataGridTextColumn 不使用 ContentPresenter（直接生成 TextBlock），
+                            故此隐式样式仅影响模板列。
+                        -->
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Validation.ErrorTemplate" Value="{x:Null}" />
+                        </Style>
+                    </DataGrid.Resources>
+                    <!--
+                        Row-level context menu for delete.
+                        DataGrid 行级右键菜单：复用 RemoveCommand 删除当前行。
+                        ContextMenu 不在可视化树中，DataContext 不会自动继承：
+                        - PlacementTarget        = 被右键的 DataGridRow
+                        - PlacementTarget.Tag    = ViewModel（RemoveCommand 所在）
+                        - PlacementTarget.DataContext = 行项 ValidationItem
+                    -->
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Setter Property="ContextMenu">
+                                <Setter.Value>
+                                    <ContextMenu>
+                                        <MenuItem Command="{Binding PlacementTarget.Tag.RemoveCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                  Header="Delete Row" />
+                                    </ContextMenu>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGrid.RowStyle>
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn Width="*"
+                                            Binding="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                                            Header="Name" />
+
+                        <DataGridTextColumn Width="80"
+                                            Binding="{Binding Age, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                                            Header="Age" />
+
+                        <DataGridTextColumn Width="*"
+                                            Binding="{Binding Email, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, ValidatesOnNotifyDataErrors=True}"
+                                            Header="Email" />
+
+                        <DataGridTemplateColumn Width="100"
+                                                Header="Action"
+                                                IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <!--
+                                        Null the button's own ErrorTemplate: CommandParameter binds to the row
+                                        item (INotifyDataErrorInfo), so without this the button would paint its
+                                        own red adorner when the row item reports errors.
+                                        置空按钮自身的 ErrorTemplate：CommandParameter 绑定到行项（INotifyDataErrorInfo），
+                                        否则行项报错时按钮会绘制自己的红色 adorner。
+                                    -->
+                                    <Button Margin="4"
+                                            Padding="8,2"
+                                            HorizontalAlignment="Center"
+                                            Command="{Binding DataContext.RemoveCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"
+                                            Content="Delete"
+                                            Validation.ErrorTemplate="{x:Null}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
         </StackPanel>
     </ScrollViewer>
 

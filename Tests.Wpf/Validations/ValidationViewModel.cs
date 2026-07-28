@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 namespace Tests.Wpf.Validations;
 
@@ -17,4 +19,28 @@ public partial class ValidationViewModel : ObservableValidator
 
     [ObservableProperty]
     public partial int MinAge { get; set; } = 25;
+
+    /// <summary>
+    /// Items bound to the DataGrid for annotation-driven validation.
+    /// 绑定到 DataGrid 的项集合，由注解驱动验证。
+    /// </summary>
+    public ObservableCollection<ValidationItem> Items { get; } = [];
+
+    public ValidationViewModel()
+    {
+        Items.Add(new ValidationItem { Name = "Alice", Age = 30, Email = "alice@example.com" });
+        Items.Add(new ValidationItem { Name = "Bob", Age = 17, Email = "bob@example.com" });
+        Items.Add(new ValidationItem { Name = "Charlie", Age = 200, Email = "charlie@example.com" });
+        Items.Add(new ValidationItem { Name = "D", Age = 25, Email = "d-bad-email" });
+    }
+
+    /// <summary>
+    /// Removes the specified row from the DataGrid.
+    /// 从 DataGrid 中删除指定行。
+    /// </summary>
+    [RelayCommand]
+    private void Remove(ValidationItem item)
+    {
+        Items.Remove(item);
+    }
 }
