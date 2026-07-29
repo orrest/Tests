@@ -1,3 +1,6 @@
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Windows;
 using Bogus;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -8,162 +11,181 @@ using Tests.Wpf.ModelNotification.Models;
 namespace Tests.Wpf.ModelNotification;
 
 /// <summary>
-/// Top-layer ViewModel of the three-layer nested scenario. Exposes <see cref="StepModel"/> and nested
-/// <see cref="ActionModel"/> / <see cref="OptionModel"/> directly; View binds deep paths.
-/// Demonstrates ModelBinder cross-layer aggregation: <see cref="Summary"/> depends on properties
-/// spanning Step / Action / Option models (three layers), all subscribed via ForwardDerived.
-/// 三层嵌套场景的顶层 ViewModel，直接暴露 <see cref="StepModel"/> 及内层 <see cref="ActionModel"/> / <see cref="OptionModel"/>。
-/// 演示 ModelBinder 跨层聚合派生：<see cref="Summary"/> 依赖跨越 Step / Action / Option 三层 Model 的属性，
-/// 全部通过 ForwardDerived 订阅 Model（不订阅下层 VM）。
+/// Top-layer ViewModel. Exposes the underlying <see cref="StepModel"/> directly
+/// and holds an <see cref="Actions"/> collection of <see cref="ActionViewModel"/>.
+/// No proxy properties — the View binds through <c>Model.Name/Enabled</c>.
+/// 顶层 ViewModel，直接暴露 <see cref="StepModel"/>，并持有 <see cref="ActionViewModel"/> 集合。
+/// 无代理属性——View 通过 <c>Model.Name/Enabled</c> 绑定。
 /// <para>
-/// <b>通知链路</b>：OptionModel.Name 变 → ActionVm.ForwardDerived 监听到 → ActionVm.Summary 刷新
-/// → StepVm.ForwardDerived 监听到 ActionModel → StepVm.Summary 刷新。逐层向上，全链路订阅 Model。
+/// <b>订阅链路</b>（逐层向上）：
+/// OptionModel 属性变 → ActionVm.SubscribeCollection(selector) 感知 → ActionVm OnPropertyChanged(Summary)
+/// → StepVm.SubscribeCollection(identity) 感知 → StepVm OnPropertyChanged(Summary)。
 /// </para>
 /// </summary>
 public partial class StepViewModel : ObservableObject
 {
-    /// <summary>
-    /// Wrapped Model, exposed as ObservableProperty so replacement auto-notifies View + refreshes derived.
-    /// 包装的 Model，作为 ObservableProperty 暴露：替换时自动通知 View 并刷新派生属性。
-    /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Summary))]
     [NotifyPropertyChangedFor(nameof(StepId))]
-    [NotifyPropertyChangedFor(nameof(ActionModel))]
-    [NotifyPropertyChangedFor(nameof(OptionModel))]
-    public partial StepModel Model { get; set; }
+    public partial StepModel Model { get; private set; }
 
-    /// <summary>Nested ActionModel, kept in sync with <see cref="StepModel.Action"/>. Exposed for View binding.</summary>
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Summary))]
-    [NotifyPropertyChangedFor(nameof(ActionId))]
-    [NotifyPropertyChangedFor(nameof(OptionModel))]
-    public partial ActionModel ActionModel { get; set; }
-
-    /// <summary>Deepest OptionModel, kept in sync with <see cref="ActionModel.Option"/>. Exposed for View binding.</summary>
-    [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Summary))]
-    [NotifyPropertyChangedFor(nameof(OptionId))]
-    public partial OptionModel OptionModel { get; set; }
+    /// <summary>Holds the下层 VM 集合. View binds ItemsControl to this.</summary>
+    public ObservableCollection<ActionViewModel> Actions { get; }
 
     private ModelBinder.ModelSubscription? _stepSub;
-    private ModelBinder.ModelSubscription? _actionSub;
-    private ModelBinder.ModelSubscription? _optionSub;
+    private ModelBinder.ModelSubscription? _actionsColSub;
+    private ModelBinder.ModelSubscription? _allOptionsSub;
 
     private static readonly Faker Faker = Tests.Wpf.Helpers.FakerHelper.INSTANCE;
 
     public StepViewModel()
     {
         Model = StepModel.CreateRandom();
-        ActionModel = Model.Action;
-        OptionModel = ActionModel.Option;
-        BindStep(Model);
-        BindAction(ActionModel);
-        BindOption(OptionModel);
+        Actions = [new ActionViewModel(Model.Action)];
+        BindStep();
+        BindActions();
+        BindAllOptions();
     }
 
-    /// <summary>Auto-rebind ActionModel subscription when replaced.</summary>
-    partial void OnActionModelChanged(ActionModel value)
-    {
-        BindAction(value);
-    }
+    // ===== 派生属性 =====
 
-    /// <summary>Auto-rebind OptionModel subscription when replaced.</summary>
-    partial void OnOptionModelChanged(OptionModel value)
-    {
-        BindOption(value);
-    }
-
-    // ===== 派生 / 计算属性 =====
-
-    /// <summary>
-    /// 顶层聚合派生：依赖跨越三层的属性。
-    /// StepModel.Name/Enabled + ActionModel.Name + OptionModel.Name/Value。
-    /// </summary>
+    /// <summary>聚合 Step.Model.Name/Enabled + 所有 ActionVm.Summary（其内含 Option 聚合）。</summary>
     public string Summary =>
-        $"Step[{Model.Name}] ({(Model.Enabled ? "On" : "Off")}) → {ActionModel.Name} (Opt={OptionModel.Name}={OptionModel.Value})";
+        $"Step[{Model.Name}] ({(Model.Enabled ? "On" : "Off")}, {Actions.Count} actions: " +
+        $"{string.Join(" | ", Actions.Select(a => a.Summary).Take(3))})";
 
     /// <summary>显示当前 StepModel 的 HashCode。</summary>
     public string StepId => $"#{Model.GetHashCode():X}";
 
-    /// <summary>显示当前 ActionModel 的 HashCode。</summary>
-    public string ActionId => $"#{ActionModel.GetHashCode():X}";
+    /// <summary>
+    /// 聚合所有 Action 下所有 Option 的 Name/Value。
+    /// 直接依赖 OptionViewModel 的 Model 属性，通过 BindAllOptions 监听其变更。
+    /// </summary>
+    public string AllOptionsSummary =>
+        $"AllOptions: {string.Join("; ", Actions.SelectMany(a => a.Options).Select(o => $"{o.Model.Name}={o.Model.Value}, Enabled={o.Model.Enabled}"))}";
 
-    /// <summary>显示当前 OptionModel 的 HashCode。</summary>
-    public string OptionId => $"#{OptionModel.GetHashCode():X}";
+    // ===== 订阅管理 =====
 
-    // ===== 用通用转发器建立 Model → VM 派生属性 的通知映射 =====
-
-    /// <summary>建立 StepModel 属性 → VM 派生属性（Summary）的映射。</summary>
-    private void BindStep(StepModel step)
+    /// <summary>监听自身 Model.Name/Enabled 变化 → 刷新 Summary。</summary>
+    private void BindStep()
     {
         _stepSub?.Dispose();
-        _stepSub = ModelBinder.ForwardDerived(
-            this,
-            step,
-            (m => m.Name, [() => Summary]),
-            (m => m.Enabled, [() => Summary]));
+        _stepSub = ModelBinder.Subscribe(
+            Model,
+            [nameof(StepModel.Name), nameof(StepModel.Enabled)],
+            _ => OnPropertyChanged(nameof(Summary)));
     }
-
-    /// <summary>建立 ActionModel 属性 → VM 派生属性（Summary）的映射。</summary>
-    private void BindAction(ActionModel action)
-    {
-        _actionSub?.Dispose();
-        _actionSub = ModelBinder.ForwardDerived(
-            this,
-            action,
-            (m => m.Name, [() => Summary]),
-            (m => m.Enabled, [() => Summary]));
-    }
-
-    /// <summary>建立 OptionModel 属性 → VM 派生属性（Summary）的映射。</summary>
-    private void BindOption(OptionModel option)
-    {
-        _optionSub?.Dispose();
-        _optionSub = ModelBinder.ForwardDerived(
-            this,
-            option,
-            (m => m.Name, [() => Summary]),
-            (m => m.Value, [() => Summary]));
-    }
-
-    // ===== 命令：替换各层实例（演示订阅迁移） =====
 
     /// <summary>
-    /// Replace the whole Step with a random one; sync ActionModel/OptionModel + auto-rebind subscriptions.
-    /// 替换 Step：同步内层 Model 引用，ObservableProperty 自动通知 View + 自动重订阅 + 刷新派生。
+    /// 监听 Actions 集合中所有 ActionVm 的 Summary 变化 + 集合增删 → 刷新 Summary。
+    /// SubscribeCollection 自动管理元素订阅（Add/Remove/Replace/Reset）。
+    /// </summary>
+    private void BindActions()
+    {
+        _actionsColSub?.Dispose();
+        _actionsColSub = ModelBinder.SubscribeCollection(
+            Actions,
+            [nameof(ActionViewModel.Summary)],
+            () => OnPropertyChanged(nameof(Summary)));
+    }
+
+    /// <summary>
+    /// 直接监听所有 Action 下每个 OptionViewModel.Model（OptionModel）的 Name/Value/Enabled 变化，
+    /// 以及 Actions 集合的增删变动 → 刷新 AllOptionsSummary。
+    /// <para>
+    /// 不同于 BindActions 的逐层通知（Option→Action→Step Summary），此方法直连 Option 层，
+    /// 确保 AllOptionsSummary 在 Option 属性变更时即时刷新，无需依赖逐层传递。
+    /// </para>
+    /// </summary>
+    private void BindAllOptions()
+    {
+        _allOptionsSub?.Dispose();
+
+        var innerSubs = new List<IDisposable>();
+        foreach (var action in Actions)
+        {
+            var sub = ModelBinder.SubscribeCollection(
+                action.Options,
+                (OptionViewModel ovm) => ovm.Model,
+                [nameof(OptionModel.Name), nameof(OptionModel.Value), nameof(OptionModel.Enabled)],
+                () => OnPropertyChanged(nameof(AllOptionsSummary)));
+            if (sub is not null)
+                innerSubs.Add(sub);
+        }
+
+        // Actions 集合变动时重建所有 Option 订阅
+        NotifyCollectionChangedEventHandler onActionsChanged = (_, _) =>
+        {
+            BindAllOptions();
+            OnPropertyChanged(nameof(AllOptionsSummary));
+        };
+        Actions.CollectionChanged += onActionsChanged;
+
+        _allOptionsSub = new ModelBinder.ModelSubscription(() =>
+        {
+            foreach (var sub in innerSubs)
+                sub.Dispose();
+            Actions.CollectionChanged -= onActionsChanged;
+        });
+    }
+
+    // ===== 命令 =====
+
+    /// <summary>
+    /// Add a new random ActionVm; SubscribeCollection auto-subscribes via CollectionChanged.
+    /// 新增随机 ActionVm；通过 SubscribeCollection 自动订阅。
+    /// </summary>
+    [RelayCommand]
+    private void AddAction()
+    {
+        Actions.Add(new ActionViewModel());
+    }
+
+    /// <summary>
+    /// Remove the first ActionVm; SubscribeCollection auto-unsubscribes via CollectionChanged.
+    /// 移除第一个 ActionVm；通过 SubscribeCollection 自动解绑。
+    /// </summary>
+    [RelayCommand]
+    private void RemoveAction()
+    {
+        if (Actions.Count > 0)
+        {
+            Actions.RemoveAt(0);
+        }
+    }
+
+    /// <summary>
+    /// Replace the whole StepModel + rebuild Actions collection (with one initial ActionVm).
+    /// 替换 StepModel + 重建 Actions 集合（含一个初始 ActionVm）。
     /// </summary>
     [RelayCommand]
     private void ReplaceStep()
     {
+        // 清空 Actions（触发 SubscribeCollection Reset → 自动解绑所有元素订阅 + 重建）
+        Actions.Clear();
         Model = StepModel.CreateRandom();
-        ActionModel = Model.Action;        // 触发 OnActionModelChanged 重订阅
-        OptionModel = ActionModel.Option;  // 触发 OnOptionModelChanged 重订阅
+        BindStep();
+        Actions.Add(new ActionViewModel(Model.Action));
+        BindAllOptions();
     }
 
     /// <summary>
-    /// Replace the nested ActionModel with a random one; sync OptionModel + auto-rebind subscriptions.
-    /// 替换 Action：同步 OptionModel 引用，自动重订阅。
-    /// </summary>
-    [RelayCommand]
-    private void ReplaceAction()
-    {
-        Model.Action = ActionModel.CreateRandom();
-        ActionModel = Model.Action;        // 触发 OnActionModelChanged 重订阅
-        OptionModel = ActionModel.Option;  // 触发 OnOptionModelChanged 重订阅
-    }
-
-    /// <summary>
-    /// 从后台线程修改最内层 OptionModel.Value（用 Bogus 随机生成新值），验证三层通知链路。
+    /// 从后台线程修改第一个 ActionVm 的第一个 OptionVm 的 Model.Value（用 Bogus 随机生成），验证三层通知链路。
     /// WPF 绑定的属性变化通知必须在 UI 线程触发，因此用 <see cref="Dispatcher.Invoke"/> 切回 UI 线程。
     /// </summary>
     [RelayCommand]
     private async Task ModifyFromBackground()
     {
+        if (Actions.Count == 0 || Actions[0].Options.Count == 0)
+        {
+            return;
+        }
+
         string newValue = Faker.Hacker.Adjective();
         await Task.Run(() =>
         {
-            Application.Current.Dispatcher.Invoke(() => OptionModel.Value = newValue);
+            Application.Current.Dispatcher.Invoke(() => Actions[0].Options[0].Model.Value = newValue);
         });
     }
 }
+
+

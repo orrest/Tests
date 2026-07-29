@@ -4,10 +4,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace Tests.Wpf.ModelNotification.Models;
 
 /// <summary>
-/// Top-layer Model of the three-layer nested scenario. Holds a nested <see cref="ActionModel"/>,
-/// which in turn holds an <see cref="OptionModel"/>. Demonstrates ModelBinder cross-layer aggregation.
-/// 三层嵌套场景的顶层 Model，持有 <see cref="ActionModel"/>（其内再持有 <see cref="OptionModel"/>），
-/// 用于演示 ModelBinder 的跨层聚合派生。
+/// Top-layer Model. Holds a single nested <see cref="ActionModel"/>.
+/// Collection semantics live in the VM layer (StepViewModel.Actions), Model stays pure data.
+/// 顶层 Model，持有一个 <see cref="ActionModel"/>。集合语义在 VM 层，Model 保持纯数据。
 /// </summary>
 public partial class StepModel : ObservableObject
 {

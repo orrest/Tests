@@ -1,57 +1,103 @@
+using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Tests.Wpf.ModelNotification.Helpers;
 using Tests.Wpf.ModelNotification.Models;
 
 namespace Tests.Wpf.ModelNotification;
 
 /// <summary>
-/// Middle-layer ViewModel of the three-layer nested scenario. Exposes <see cref="ActionModel"/> and the
-/// nested <see cref="OptionModel"/> directly; View binds deep paths (<c>ActionModel.Name</c>, <c>OptionModel.Value</c>).
-/// 三层嵌套场景的中层 ViewModel，直接暴露 <see cref="ActionModel"/> 与内层 <see cref="OptionModel"/>，
-/// View 绑定深链路 <c>ActionModel.Name</c>、<c>OptionModel.Value</c> 等。
+/// Middle-layer ViewModel. Exposes the underlying <see cref="ActionModel"/> directly
+/// and holds an <see cref="Options"/> collection of <see cref="OptionViewModel"/>.
+/// No proxy properties — the View binds through <c>Model.Name/Enabled/DelayMs</c>.
+/// 中层 ViewModel，直接暴露 <see cref="ActionModel"/>，并持有 <see cref="OptionViewModel"/> 集合。
+/// 无代理属性——View 通过 <c>Model.Name/Enabled/DelayMs</c> 绑定。
 /// <para>
-/// 无代理属性、无派生属性、无跨层订阅——本 VM 仅负责持有 Model 并提供替换命令，与 <see cref="OptionViewModel"/> 结构对称。
-/// 跨层聚合派生统一由顶层 <see cref="StepViewModel.Summary"/> 承担。
+/// <b>订阅链路</b>：
+/// <list type="bullet">
+/// <item><see cref="Subscribe{TSource}"/> 监听自身 Model.Name/Enabled 变化 → OnPropertyChanged(nameof(Summary))</item>
+/// <item><see cref="SubscribeCollection{TElement, TNested}(ObservableCollection{TElement}, Func{TElement, TNested}, IEnumerable{string}, Action)"/>
+/// 监听 Options 中每个 OptionVm 的 <c>Model</c>（OptionModel）的 Name/Value 变化 + 集合增删 → OnPropertyChanged(nameof(Summary))</item>
+/// </list>
 /// </para>
 /// </summary>
 public partial class ActionViewModel : ObservableObject
 {
-    /// <summary>
-    /// Wrapped Model, exposed as ObservableProperty so replacement auto-notifies View + parent VM.
-    /// 包装的 Model，作为 ObservableProperty 暴露：替换时自动通知 View 和上层 VM。
-    /// </summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(OptionModel))]
-    public partial ActionModel Model { get; set; }
+    public partial ActionModel Model { get; private set; }
 
-    /// <summary>
-    /// The nested OptionModel, kept in sync with <see cref="ActionModel.Option"/>. Exposed directly for View binding.
-    /// 嵌套的 OptionModel，与 <see cref="ActionModel.Option"/> 保持同步；直接暴露供 View 深链路绑定。
-    /// </summary>
-    [ObservableProperty]
-    public partial OptionModel OptionModel { get; set; }
+    /// <summary>Holds the下层 VM 集合. View binds ItemsControl to this.</summary>
+    public ObservableCollection<OptionViewModel> Options { get; }
+
+    private ModelBinder.ModelSubscription? _actionSub;
+    private ModelBinder.ModelSubscription? _optionsColSub;
 
     public ActionViewModel()
     {
         Model = ActionModel.CreateRandom();
-        OptionModel = Model.Option;
+        Options = [new OptionViewModel(Model.Option)];
+        BindAction();
+        BindOptions();
     }
 
-    /// <summary>Construct with an existing Model (used when parent replaces nested instances).</summary>
+    /// <summary>Construct with an existing Model (used by parent when creating VM collection).</summary>
     internal ActionViewModel(ActionModel model)
     {
         Model = model;
-        OptionModel = model.Option;
+        Options = [new OptionViewModel(model.Option)];
+        BindAction();
+        BindOptions();
+    }
+
+    // ===== 派生属性 =====
+
+    /// <summary>聚合 Action.Model.Name/Enabled + 所有 OptionVm.Model.Name。</summary>
+    public string Summary =>
+        $"{Model.Name}({(Model.Enabled ? "On" : "Off")}, {Options.Count} opts: {string.Join(", ", Options.Select(o => o.Model.Name))})";
+
+    // ===== 订阅管理 =====
+
+    /// <summary>监听自身 Model.Name/Enabled 变化 → 刷新 Summary。</summary>
+    private void BindAction()
+    {
+        _actionSub?.Dispose();
+        _actionSub = ModelBinder.Subscribe(
+            Model,
+            [nameof(ActionModel.Name), nameof(ActionModel.Enabled)],
+            _ => OnPropertyChanged(nameof(Summary)));
     }
 
     /// <summary>
-    /// Replace the nested OptionModel with a random one; sync ActionModel.Option.
-    /// 替换 OptionModel：同步 ActionModel.Option 引用，ObservableProperty 自动通知 View。
+    /// 监听 Options 集合中每个 OptionVm 的 <c>Model</c>（OptionModel）的 Name/Value 变化 + 集合增删 → 刷新 Summary。
+    /// selector <c>ovm => ovm.Model</c> 提取出 OptionModel 实例直接订阅其属性变化，无需代理属性中转。
     /// </summary>
-    [RelayCommand]
-    private void ReplaceOption()
+    private void BindOptions()
     {
-        Model.Option = OptionModel.CreateRandom();
-        OptionModel = Model.Option;
+        _optionsColSub?.Dispose();
+        _optionsColSub = ModelBinder.SubscribeCollection(
+            Options,
+            (OptionViewModel ovm) => ovm.Model,
+            [nameof(OptionModel.Name), nameof(OptionModel.Value)],
+            () => OnPropertyChanged(nameof(Summary)));
+    }
+
+    // ===== 命令 =====
+
+    /// <summary>Add a new random OptionVm; SubscribeCollection auto-subscribes via CollectionChanged.</summary>
+    [RelayCommand]
+    private void AddOption()
+    {
+        Options.Add(new OptionViewModel());
+    }
+
+    /// <summary>Remove the first OptionVm; SubscribeCollection auto-unsubscribes via CollectionChanged.</summary>
+    [RelayCommand]
+    private void RemoveOption()
+    {
+        if (Options.Count > 0)
+        {
+            Options.RemoveAt(0);
+        }
     }
 }

@@ -4,8 +4,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace Tests.Wpf.ModelNotification.Models;
 
 /// <summary>
-/// Middle layer Model of the three-layer nested scenario. Holds an inner <see cref="OptionModel"/>.
-/// 三层嵌套场景的中层 Model，持有内层 <see cref="OptionModel"/>。
+/// Middle-layer Model. Holds a single nested <see cref="OptionModel"/>.
+/// Collection semantics live in the VM layer (ActionViewModel.Options), Model stays pure data.
+/// 中层 Model，持有一个 <see cref="OptionModel"/>。集合语义在 VM 层，Model 保持纯数据。
 /// </summary>
 public partial class ActionModel : ObservableObject
 {

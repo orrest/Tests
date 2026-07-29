@@ -10,118 +10,178 @@
              Foreground="#222222"
              mc:Ignorable="d">
     <ScrollViewer>
-        <StackPanel Margin="10" Background="Transparent">
+        <StackPanel Margin="10"
+                Background="Transparent">
 
             <!--  说明  -->
-            <GroupBox Header="三层嵌套聚合：StepVm → ActionVm → OptionVm（无代理属性，View 直绑 Model 深链路）" Margin="0,0,0,10">
-                <TextBlock TextWrapping="Wrap" Foreground="#333333" LineHeight="22">
-                    VM 不含代理属性，View 直接绑定 Model 深链路（Step.Model.Name、Step.OptionModel.Value 等）。
-                    顶层 <Run FontWeight="Bold" Foreground="#1F4E79">Step.Summary</Run>
-                    依赖跨越三层的属性（StepModel + ActionModel + OptionModel）。
+            <GroupBox Header="VM 直接暴露 Model，无代理属性（清晰分层，逐层订阅）"
+                    Margin="0,0,0,10">
+                <TextBlock TextWrapping="Wrap"
+                        Foreground="#333333"
+                        LineHeight="22">
+                    每层 VM 持有<Run FontWeight="Bold">下层 VM 集合</Run>（不是下层 Model 集合），通过 <Run FontFamily="Consolas"
+                            FontWeight="Bold">Model.Xxx</Run> 直接暴露。
+                    View 通过 <Run FontFamily="Consolas"
+                            FontWeight="Bold">Model.Name</Run> 等路径读取/写入，属性变化通知直接来自 Model（<Run FontFamily="Consolas"
+                            FontWeight="Bold">[ObservableProperty]</Run>）。
                     <LineBreak/>
-                    • 编辑任一层的 TextBox/CheckBox → 直接写回 Model，同时 ModelBinder 跨层转发派生刷新；
+                    • <Run Foreground="#1F4E79"
+                            FontWeight="Bold">SubscribeCollection(selector)</Run>
+                    <Run Foreground="#333333">：上层 VM 通过 selector 监听下层 VM 的 </Run>
+                    <Run Foreground="#922B21"
+                            FontWeight="Bold">Model</Run>
+                    <Run Foreground="#333333"> 的属性变化——</Run>
+                    <Run Foreground="#922B21"
+                            FontWeight="Bold">OptionModel.Name → ActionVm.Summary → StepVm.Summary</Run>
+                    <Run Foreground="#333333">，逐层向上，无代理属性中转。</Run>
                     <LineBreak/>
-                    • <Run Foreground="#1F4E79" FontWeight="Bold">核心机制</Run>
-                    <Run Foreground="#333333">：每层 VM 用 ForwardDerived 订阅下层 </Run>
-                    <Run Foreground="#922B21" FontWeight="Bold">Model</Run>
-                    <Run Foreground="#333333">（而非下层 VM）的 PropertyChanged，全链路订阅 Model，VM 之间无依赖。</Run>
-                    <LineBreak/>
-                    • 点 "Replace Step/Action/Option" / "Modify from background" —— 验证多层实例替换的订阅迁移。
+                    • <Run Foreground="#1F4E79"
+                            FontWeight="Bold">CollectionChanged</Run>
+                    <Run Foreground="#333333">：集合 Add 时订阅新下层 VM 的 Model、Remove 时解绑，订阅生命周期自动管理。</Run>
                 </TextBlock>
             </GroupBox>
 
             <!-- ============================================================ -->
             <!--  Step 层（顶层）                                              -->
             <!-- ============================================================ -->
-            <GroupBox Header="① Step 层（顶层）— {Binding Step.Model.Name} / Step.Summary"
-                       Margin="0,0,0,10">
+            <GroupBox Header="① Step 层（顶层）— 绑 StepVm.Model 属性"
+                      Margin="0,0,0,10"
+                      DataContext="{Binding Step}">
                 <StackPanel>
-                    <!--  Step Model 直绑  -->
+                    <!--  Step Model 属性  -->
                     <Label Content="Step Name"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding Step.Model.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Margin="0,0,0,8"
+                            Text="{Binding Model.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Label Content="Step Enabled"/>
-                    <CheckBox Margin="0,0,0,8" IsChecked="{Binding Step.Model.Enabled, Mode=TwoWay}"/>
+                    <CheckBox Margin="0,0,0,8"
+                            IsChecked="{Binding Model.Enabled, Mode=TwoWay}"/>
 
                     <!--  顶层聚合派生 Summary  -->
                     <TextBlock Margin="0,8,0,8"
                                Foreground="#922B21"
                                FontSize="14"
                                FontWeight="Bold"
-                               Text="{Binding Step.Summary, StringFormat='Step.Summary (三层聚合): {0}'}"
+                               Text="{Binding Summary, StringFormat='Step.Summary (顶层聚合): {0}'}"
                                TextWrapping="Wrap"/>
 
-                    <!--  HashCode 标识  -->
-                    <TextBlock Foreground="#666666">
-                        <Run Text="{Binding Step.StepId, StringFormat='Step HashCode: {0}   ', Mode=OneWay}"/>
-                        <Run Text="{Binding Step.ActionId, StringFormat='Action HashCode: {0}   ', Mode=OneWay}"/>
-                        <Run Text="{Binding Step.OptionId, StringFormat='Option HashCode: {0}', Mode=OneWay}"/>
-                    </TextBlock>
-                </StackPanel>
-            </GroupBox>
-
-            <!-- ============================================================ -->
-            <!--  Action 层（中层）                                            -->
-            <!-- ============================================================ -->
-            <GroupBox Header="② Action 层（中层）— {Binding Step.ActionModel.Name}"
-                       Margin="0,0,0,10"
-                       DataContext="{Binding Step}">
-                <StackPanel>
-                    <!--  Action Model 直绑  -->
-                    <Label Content="Action Name"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding ActionModel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Action Enabled"/>
-                    <CheckBox Margin="0,0,0,8" IsChecked="{Binding ActionModel.Enabled, Mode=TwoWay}"/>
-                    <Label Content="Delay (ms)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding ActionModel.DelayMs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
                     <TextBlock Margin="0,8,0,8"
-                               Foreground="#1B5E20"
-                               TextWrapping="Wrap">
-                        <Run Text="编辑这里任一属性，直接写回 ActionModel；StepVm 通过 ForwardDerived 监听到 → Step.Summary 刷新。"/>
+                               Foreground="#922B21"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               Text="{Binding AllOptionsSummary, StringFormat='Step.AllOptionsSummary (顶层聚合): {0}'}"
+                               TextWrapping="Wrap"/>
+
+
+                    <TextBlock Foreground="#666666">
+                        <Run Text="{Binding StepId, StringFormat='Step HashCode: {0}', Mode=OneWay}"/>
                     </TextBlock>
+
+                    <!--  Actions 集合（绑 ActionVm 集合）  -->
+                    <TextBlock Margin="0,8,0,4"
+                            FontWeight="Bold"
+                            Foreground="#1F4E79">
+                        <Run Text="Actions 集合 (ItemsControl, 绑 ActionVm):"/>
+                    </TextBlock>
+                    <ItemsControl ItemsSource="{Binding Actions}"
+                            Margin="0,0,0,8">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:ActionViewModel}">
+                                <Border BorderBrush="#CCCCCC"
+                                        BorderThickness="1"
+                                        Margin="0,0,0,6"
+                                        Padding="8">
+                                    <StackPanel>
+                                        <!--  Action Model 属性  -->
+                                        <Label Content="Action Name"
+                                                Margin="0,0,0,2"/>
+                                        <TextBox Margin="0,0,0,6"
+                                                Text="{Binding Model.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <StackPanel Orientation="Horizontal"
+                                                Margin="0,0,0,6">
+                                            <CheckBox Content="Enabled"
+                                                    IsChecked="{Binding Model.Enabled, Mode=TwoWay}"
+                                                    Margin="0,0,10,0"/>
+                                            <Label Content="Delay:"
+                                                    Margin="0,0,2,0"/>
+                                            <TextBox Width="60"
+                                                    Text="{Binding Model.DelayMs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </StackPanel>
+
+                                        <!--  Action 中层聚合派生 Summary  -->
+                                        <TextBlock Margin="0,4,0,6"
+                                                   Foreground="#1F4E79"
+                                                   Text="{Binding Summary, StringFormat='Action.Summary (中层聚合): {0}'}"
+                                                   TextWrapping="Wrap"/>
+
+                                        <!--  Action 操作区  -->
+                                        <StackPanel Orientation="Horizontal"
+                                                Margin="0,0,0,6">
+                                            <Button Command="{Binding AddOptionCommand}"
+                                                    Content="Add Option"
+                                                    Margin="0,0,8,0"/>
+                                            <Button Command="{Binding RemoveOptionCommand}"
+                                                    Content="Remove Option"/>
+                                        </StackPanel>
+
+                                        <!--  Options 集合（绑 OptionVm 集合）  -->
+                                        <TextBlock FontWeight="Bold"
+                                                Foreground="#1B5E20"
+                                                Margin="0,4,0,2">
+                                            <Run Text="Options 集合 (绑 OptionVm):"/>
+                                        </TextBlock>
+                                        <ItemsControl ItemsSource="{Binding Options}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate DataType="{x:Type local:OptionViewModel}">
+                                                    <StackPanel Orientation="Horizontal"
+                                                            Margin="0,0,0,4">
+                                                        <TextBox Width="100"
+                                                                Text="{Binding Model.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                Margin="0,0,6,0"/>
+                                                        <TextBox Width="80"
+                                                                Text="{Binding Model.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                Margin="0,0,6,0"/>
+                                                        <CheckBox Content="On"
+                                                                IsChecked="{Binding Model.Enabled, Mode=TwoWay}"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                 </StackPanel>
             </GroupBox>
 
             <!-- ============================================================ -->
-            <!--  Option 层（最内层）                                          -->
+            <!--  操作区（Step 层命令）                                        -->
             <!-- ============================================================ -->
-            <GroupBox Header="③ Option 层（最内层）— {Binding Step.OptionModel.Value}"
-                       Margin="0,0,0,10"
-                       DataContext="{Binding Step}">
+            <GroupBox Header="操作（验证分层订阅与跨 VM 通知）"
+                    Margin="0,0,0,10"
+                      DataContext="{Binding Step}">
                 <StackPanel>
-                    <!--  Option Model 直绑  -->
-                    <Label Content="Option Name"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding OptionModel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Option Value"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding OptionModel.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Option Enabled"/>
-                    <CheckBox Margin="0,0,0,8" IsChecked="{Binding OptionModel.Enabled, Mode=TwoWay}"/>
-
-                    <TextBlock Margin="0,4,0,0"
-                               Foreground="#1B5E20"
-                               TextWrapping="Wrap">
-                        <Run Foreground="#1B5E20">编辑这里任一属性，直接写回 OptionModel，同时跨层转发：</Run>
-                        <LineBreak/>
-                        <Run Foreground="#666666">OptionModel.Name 变 → ActionVm.ForwardDerived 监听到 → ActionVm.Summary 刷新 → StepVm.ForwardDerived 监听到 → StepVm.Summary 刷新</Run>
-                    </TextBlock>
-                </StackPanel>
-            </GroupBox>
-
-            <!-- ============================================================ -->
-            <!--  操作区                                                      -->
-            <!-- ============================================================ -->
-            <GroupBox Header="操作（验证订阅迁移与跨层通知）" Margin="0,0,0,10"
-                       DataContext="{Binding Step}">
-                <StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                        <Button Command="{Binding ReplaceStepCommand}" Content="Replace Step" Margin="0,0,10,0"/>
-                        <Button Command="{Binding ReplaceActionCommand}" Content="Replace Action" Margin="0,0,10,0"/>
-                        <Button Command="{Binding ModifyFromBackgroundCommand}" Content="Modify Option.Value from background"/>
+                    <StackPanel Orientation="Horizontal"
+                            Margin="0,0,0,8">
+                        <Button Command="{Binding AddActionCommand}"
+                                Content="Add Action"
+                                Margin="0,0,10,0"/>
+                        <Button Command="{Binding RemoveActionCommand}"
+                                Content="Remove Action"
+                                Margin="0,0,10,0"/>
+                        <Button Command="{Binding ReplaceStepCommand}"
+                                Content="Replace Step"
+                                Margin="0,0,10,0"/>
+                        <Button Command="{Binding ModifyFromBackgroundCommand}"
+                                Content="Modify 1st Option.Value from background"/>
                     </StackPanel>
-                    <TextBlock Foreground="#666666" TextWrapping="Wrap">
-                        <Run Text="Replace Step：整个三层重建（Step/Action/Option Model 全部替换，订阅自动迁移）；"/>
+                    <TextBlock Foreground="#666666"
+                            TextWrapping="Wrap">
+                        <Run Text="Add/Remove Action：集合增删，StepVm 自动订阅/解绑新 ActionVm；"/>
                         <LineBreak/>
-                        <Run Text="Modify from background：后台线程改 OptionModel.Value，验证三层 Summary 都刷新。"/>
+                        <Run Text="编辑任一 Option.Model.Name：OptionModel.PropertyChanged → ActionVm.SubscribeCollection(selector) → ActionVm.Summary → StepVm.SubscribeCollection → StepVm.Summary，逐层向上；"/>
+                        <LineBreak/>
+                        <Run Text="View 绑定路径全部为 Model.Xxx，属性通知直接来自 Model（[ObservableProperty]），无代理属性中转。"/>
                     </TextBlock>
                 </StackPanel>
             </GroupBox>
