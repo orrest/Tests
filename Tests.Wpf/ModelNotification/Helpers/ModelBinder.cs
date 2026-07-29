@@ -6,90 +6,51 @@ using CommunityToolkit.Mvvm.ComponentModel;
 namespace Tests.Wpf.ModelNotification.Helpers;
 
 /// <summary>
-/// 通用属性转发辅助类。用于"代理属性"场景：
-/// 当 Model 的某个属性变化时，自动触发 ViewModel 对应代理属性（及任意派生属性）的通知，
+/// 通用属性转发辅助类。用于"无代理属性"场景：
+/// 当 Model 的某个属性变化时，自动触发 ViewModel 派生属性（如 Summary）的通知，
 /// 从而消除每个 ViewModel 里手写 <c>if (e.PropertyName == ...)</c> 的样板代码。
+/// <para>
+/// View 直接绑定 Model 深链路（<c>{Binding Model.Name}</c>），Model 自身实现 INotifyPropertyChanged，
+/// 故代理属性的刷新由 Model 直接通知 View；本类仅负责让 VM 的<b>派生计算属性</b>响应 Model 变化。
+/// </para>
 /// </summary>
 public static class ModelBinder
 {
     /// <summary>
-    /// 订阅 <paramref name="model"/> 的属性变化，当 <paramref name="modelProp"/> 指向的属性变化时，
-    /// 调用 <paramref name="vm"/> 上的 <c>OnPropertyChanged</c>（通过反射）触发
-    /// <paramref name="vmProp"/> 指向的代理属性，以及 <paramref name="extraNotify"/> 中的派生属性。
-    /// </summary>
-    /// <typeparam name="TModel">Model 类型，必须实现 INotifyPropertyChanged。</typeparam>
-    /// <typeparam name="TValue">Model 属性值类型。</typeparam>
-    /// <param name="vm">需要触发通知的 ViewModel（通常是 ObservableObject 派生类）。</param>
-    /// <param name="model">被监听的 Model 实例。</param>
-    /// <param name="modelProp">形如 <c>m =&gt; m.Name</c> 的表达式，定位 Model 属性。</param>
-    /// <param name="vmProp">形如 <c>() =&gt; Name</c> 的表达式，定位 ViewModel 代理属性。</param>
-    /// <param name="extraNotify">额外的派生属性表达式（如 <c>() =&gt; Greeting</c>），随代理属性一起被通知。</param>
-    public static void ForwardProperty<TModel, TValue>(
-        ObservableObject vm,
-        TModel model,
-        Expression<Func<TModel, TValue>> modelProp,
-        Expression<Func<TValue>> vmProp,
-        params Expression<Func<object>>[] extraNotify)
-        where TModel : INotifyPropertyChanged
-    {
-        if (model is null)
-        {
-            return;
-        }
-
-        string modelPropName = GetMemberName(modelProp);
-        string vmPropName = GetMemberName(vmProp);
-        string[] extraNames = extraNotify.Select(GetMemberName).ToArray();
-
-        // 拿到 ObservableObject 的 OnPropertyChanged(string) 反射句柄（protected，需反射）。
-        MethodInfo? raiseMethod = typeof(ObservableObject).GetMethod(
-            "OnPropertyChanged",
-            BindingFlags.Instance | BindingFlags.NonPublic,
-            binder: null,
-            types: [typeof(string)],
-            modifiers: null);
-
-        model.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName != modelPropName)
-            {
-                return;
-            }
-
-            raiseMethod?.Invoke(vm, [vmPropName]);
-            foreach (string name in extraNames)
-            {
-                raiseMethod?.Invoke(vm, [name]);
-            }
-        };
-    }
-
-    /// <summary>
-    /// 一次性建立 <paramref name="model"/> 多个属性 → ViewModel 多个代理属性（+各自派生属性）的转发映射。
+    /// 建立 Model 属性变化 → ViewModel 派生属性通知 的映射，返回 <see cref="ModelSubscription"/> 句柄。
     /// <para>
-    /// 嵌套场景下一个 Model 有多个属性都要转发（如 Address 的 City/Country/ZipCode），
-    /// 用此方法比多次调用 <see cref="ForwardProperty{TModel,TValue}"/> 更紧凑：
-    /// 只订阅一次 <c>PropertyChanged</c>，按属性名分发到对应的 VM 属性集合。
+    /// 典型用法（嵌套场景下为每层 Model 各调用一次）：
+    /// <code>
+    /// _sub?.Dispose();
+    /// _sub = ModelBinder.ForwardDerived(
+    ///     this, stepModel,
+    ///     (m =&gt; m.Name, [() =&gt; Summary]),
+    ///     (m =&gt; m.Enabled, [() =&gt; Summary]));
+    /// </code>
     /// </para>
     /// <para>
-    /// 每个映射项是三元组：(Model 属性选择器, VM 代理属性选择器, 该映射附带的派生属性选择器数组)。
+    /// 替换 Model 实例时，Dispose 旧句柄（解绑事件）再调用本方法建立新订阅。
+    /// 也可配合 <c>[ObservableProperty]</c> 的 <c>OnXxxChanged</c> partial 方法自动重订阅。
     /// </para>
     /// </summary>
     /// <typeparam name="TModel">Model 类型，必须实现 INotifyPropertyChanged。</typeparam>
-    /// <param name="vm">需要触发通知的 ViewModel（ObservableObject 派生类）。</param>
+    /// <param name="vm">需要触发派生属性通知的 ViewModel（ObservableObject 派生类）。</param>
     /// <param name="model">被监听的 Model 实例。</param>
-    /// <param name="mappings">映射项数组。每项形如：<c>(m =&gt; m.City, () =&gt; City, [() =&gt; Summary])</c>。</param>
-    public static void ForwardProperties<TModel>(
+    /// <param name="mappings">
+    /// 映射项数组。每项形如：<c>(m =&gt; m.Name, [() =&gt; Summary])</c>，
+    /// 表示"当 Model.Name 变化时，触发 VM 的 Summary 派生属性通知"。
+    /// </param>
+    /// <returns>订阅句柄；<paramref name="model"/> 为 null 或映射为空时返回 <c>null</c>。</returns>
+    public static ModelSubscription? ForwardDerived<TModel>(
         ObservableObject vm,
         TModel model,
         params (Expression<Func<TModel, object?>> ModelProp,
-                Expression<Func<object?>> VmProp,
-                Expression<Func<object>>[] ExtraNotify)[] mappings)
+                Expression<Func<object>>[] DerivedProps)[] mappings)
         where TModel : INotifyPropertyChanged
     {
         if (model is null || mappings.Length == 0)
         {
-            return;
+            return null;
         }
 
         MethodInfo? raiseMethod = typeof(ObservableObject).GetMethod(
@@ -99,25 +60,23 @@ public static class ModelBinder
             types: [typeof(string)],
             modifiers: null);
 
-        // 预编译映射表：Model 属性名 → 需通知的 VM 属性名集合（代理 + 派生）
+        // 预编译映射表：Model 属性名 → 需通知的 VM 派生属性名集合
         var dispatch = new Dictionary<string, string[]>(mappings.Length);
-        foreach (var (modelProp, vmProp, extraNotify) in mappings)
+        foreach (var (modelProp, derivedProps) in mappings)
         {
-            string modelPropName = GetMemberName(modelProp);
-            string vmPropName = GetMemberName(vmProp);
-            var targets = new string[1 + (extraNotify?.Length ?? 0)];
-            targets[0] = vmPropName;
-            if (extraNotify is { Length: > 0 })
+            int derivedLen = derivedProps?.Length ?? 0;
+            var targets = new string[derivedLen];
+            if (derivedProps is { Length: > 0 })
             {
-                for (int i = 0; i < extraNotify.Length; i++)
+                for (int j = 0; j < derivedProps.Length; j++)
                 {
-                    targets[i + 1] = GetMemberName(extraNotify[i]);
+                    targets[j] = GetMemberName(derivedProps[j]);
                 }
             }
-            dispatch[modelPropName] = targets;
+            dispatch[GetMemberName(modelProp)] = targets;
         }
 
-        model.PropertyChanged += (_, e) =>
+        void Handler(object? _, PropertyChangedEventArgs e)
         {
             if (e.PropertyName is null || !dispatch.TryGetValue(e.PropertyName, out var targets))
             {
@@ -128,7 +87,10 @@ public static class ModelBinder
             {
                 raiseMethod?.Invoke(vm, [name]);
             }
-        };
+        }
+
+        model.PropertyChanged += Handler;
+        return new ModelSubscription(model, Handler);
     }
 
     private static string GetMemberName(LambdaExpression expression)
@@ -143,5 +105,41 @@ public static class ModelBinder
         return body is MemberExpression member
             ? member.Member.Name
             : throw new ArgumentException("Expression must point to a property or field.", nameof(expression));
+    }
+
+    /// <summary>
+    /// 一次 <see cref="ForwardDerived{TModel}"/> 调用产生的订阅生命周期句柄。
+    /// Dispose 即解绑事件订阅。
+    /// <para>
+    /// 典型用法：
+    /// <code>
+    /// _sub?.Dispose();
+    /// _sub = ModelBinder.ForwardDerived(this, model, ...);
+    /// </code>
+    /// </para>
+    /// </summary>
+    public sealed class ModelSubscription : IDisposable
+    {
+        private INotifyPropertyChanged? _model;
+        private readonly PropertyChangedEventHandler _handler;
+
+        internal ModelSubscription(INotifyPropertyChanged model, PropertyChangedEventHandler handler)
+        {
+            _model = model;
+            _handler = handler;
+        }
+
+        /// <summary>
+        /// Unsubscribe the PropertyChanged handler. Safe to call multiple times.
+        /// 解绑事件订阅；可安全重复调用。
+        /// </summary>
+        public void Dispose()
+        {
+            if (_model is not null)
+            {
+                _model.PropertyChanged -= _handler;
+                _model = null;
+            }
+        }
     }
 }

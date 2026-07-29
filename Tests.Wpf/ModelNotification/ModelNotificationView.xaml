@@ -5,7 +5,7 @@
              xmlns:local="clr-namespace:Tests.Wpf.ModelNotification"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              d:DataContext="{d:DesignInstance Type=local:ModelNotificationViewModel}"
-             d:DesignHeight="1000"
+             d:DesignHeight="800"
              d:DesignWidth="900"
              Foreground="#222222"
              mc:Ignorable="d">
@@ -13,193 +13,115 @@
         <StackPanel Margin="10" Background="Transparent">
 
             <!--  说明  -->
-            <GroupBox Header="Model 变化 → ViewModel 通知的三种方式（含嵌套 Address + 计算属性）" Margin="0,0,0,10">
+            <GroupBox Header="三层嵌套聚合：StepVm → ActionVm → OptionVm（无代理属性，View 直绑 Model 深链路）" Margin="0,0,0,10">
                 <TextBlock TextWrapping="Wrap" Foreground="#333333" LineHeight="22">
-                    每个 GroupBox 演示一种方式，统一含嵌套 AddressModel + 三种计算属性。下面统一可交互：
+                    VM 不含代理属性，View 直接绑定 Model 深链路（Step.Model.Name、Step.OptionModel.Value 等）。
+                    顶层 <Run FontWeight="Bold" Foreground="#1F4E79">Step.Summary</Run>
+                    依赖跨越三层的属性（StepModel + ActionModel + OptionModel）。
                     <LineBreak/>
-                    • 编辑 Name/Age/City/Country/ZipCode —— 双向绑定 + 实时刷新（UpdateSourceTrigger=PropertyChanged）；
+                    • 编辑任一层的 TextBox/CheckBox → 直接写回 Model，同时 ModelBinder 跨层转发派生刷新；
                     <LineBreak/>
-                    • <Run Foreground="#1F4E79" FontWeight="Bold">IsAdult</Run>
-                    <Run Foreground="#333333">/ </Run>
-                    <Run Foreground="#1F4E79" FontWeight="Bold">FullAddress</Run>
-                    是 Model 层计算属性（[NotifyPropertyChangedFor] 自动联动）；
+                    • <Run Foreground="#1F4E79" FontWeight="Bold">核心机制</Run>
+                    <Run Foreground="#333333">：每层 VM 用 ForwardDerived 订阅下层 </Run>
+                    <Run Foreground="#922B21" FontWeight="Bold">Model</Run>
+                    <Run Foreground="#333333">（而非下层 VM）的 PropertyChanged，全链路订阅 Model，VM 之间无依赖。</Run>
                     <LineBreak/>
-                    • <Run Foreground="#922B21" FontWeight="Bold">Summary</Run>
-                    是 VM 层跨层计算属性（依赖 Name+Age+City+Country），观察三种方式刷新差异；
-                    <LineBreak/>
-                    • 点 "Replace Model" / "Replace Address" / "Modify from background" —— 验证嵌套实例替换的订阅迁移与全链路通知。
+                    • 点 "Replace Step/Action/Option" / "Modify from background" —— 验证多层实例替换的订阅迁移。
                 </TextBlock>
             </GroupBox>
 
             <!-- ============================================================ -->
-            <!--  方式①：直接暴露 Model                                          -->
+            <!--  Step 层（顶层）                                              -->
             <!-- ============================================================ -->
-            <GroupBox Header="方式① Direct —— View 直接绑定 Model 深路径 {Binding User.Address.City}"
-                       Margin="0,0,0,10"
-                       DataContext="{Binding Direct}">
+            <GroupBox Header="① Step 层（顶层）— {Binding Step.Model.Name} / Step.Summary"
+                       Margin="0,0,0,10">
                 <StackPanel>
-                    <TextBlock Margin="0,0,0,6"
-                               Foreground="#1B5E20"
-                               TextWrapping="Wrap">
-                        VM 直接暴露 UserModel，嵌套深链路 User.Address.City 自动可用（Model 链路自通，VM 无需转发）。
-                        <LineBreak/>
-                        <Run Foreground="#922B21" FontWeight="Bold">局限</Run>
-                        <Run Foreground="#1B5E20">：Summary 是 VM 层计算属性，Direct 方式不订阅 Model 内部变化，故编辑 Name/Age/City 时 Summary 不会实时刷新，仅替换 User 时才更新。</Run>
-                    </TextBlock>
+                    <!--  Step Model 直绑  -->
+                    <Label Content="Step Name"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding Step.Model.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Step Enabled"/>
+                    <CheckBox Margin="0,0,0,8" IsChecked="{Binding Step.Model.Enabled, Mode=TwoWay}"/>
 
-                    <!--  User 区  -->
-                    <Label Content="Name"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding User.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Age"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding User.Age, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <!--  嵌套 Address 区  -->
-                    <Label Content="City (嵌套)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding User.Address.City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Country (嵌套)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding User.Address.Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="ZipCode (嵌套)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding User.Address.ZipCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <!--  计算属性显示  -->
-                    <StackPanel Margin="0,8,0,8" Orientation="Horizontal">
-                        <TextBlock Foreground="#1F4E79" Text="IsAdult (Model层): "/>
-                        <TextBlock Foreground="#154360" FontWeight="Bold" Text="{Binding User.IsAdult}"/>
-                    </StackPanel>
-                    <TextBlock Margin="0,0,0,4"
-                               Foreground="#1F4E79"
-                               Text="{Binding User.Address.FullAddress, StringFormat='FullAddress (Model层): {0}'}"
-                               TextWrapping="Wrap"/>
-                    <TextBlock Margin="0,0,0,8"
+                    <!--  顶层聚合派生 Summary  -->
+                    <TextBlock Margin="0,8,0,8"
                                Foreground="#922B21"
-                               Text="{Binding Summary, StringFormat='Summary (VM层): {0}'}"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               Text="{Binding Step.Summary, StringFormat='Step.Summary (三层聚合): {0}'}"
                                TextWrapping="Wrap"/>
 
-                    <!--  操作  -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                        <Button Command="{Binding ReplaceUserCommand}" Content="Replace Model" Margin="0,0,10,0"/>
-                        <Button Command="{Binding ReplaceAddressCommand}" Content="Replace Address" Margin="0,0,10,0"/>
-                        <Button Command="{Binding ModifyFromBackgroundCommand}" Content="Modify from background"/>
-                    </StackPanel>
-
+                    <!--  HashCode 标识  -->
                     <TextBlock Foreground="#666666">
-                        <Run Text="{Binding ModelId, StringFormat='Model HashCode: {0}   ', Mode=OneWay}"/>
-                        <Run Text="{Binding AddressId, StringFormat='Address HashCode: {0}', Mode=OneWay}"/>
+                        <Run Text="{Binding Step.StepId, StringFormat='Step HashCode: {0}   ', Mode=OneWay}"/>
+                        <Run Text="{Binding Step.ActionId, StringFormat='Action HashCode: {0}   ', Mode=OneWay}"/>
+                        <Run Text="{Binding Step.OptionId, StringFormat='Option HashCode: {0}', Mode=OneWay}"/>
                     </TextBlock>
                 </StackPanel>
             </GroupBox>
 
             <!-- ============================================================ -->
-            <!--  方式②：包装属性 + 手写转发                                     -->
+            <!--  Action 层（中层）                                            -->
             <!-- ============================================================ -->
-            <GroupBox Header="方式② Wrapped —— 代理属性 {Binding City}，手写 switch 转发（含嵌套订阅）"
+            <GroupBox Header="② Action 层（中层）— {Binding Step.ActionModel.Name}"
                        Margin="0,0,0,10"
-                       DataContext="{Binding Wrapped}">
+                       DataContext="{Binding Step}">
                 <StackPanel>
-                    <TextBlock Margin="0,0,0,6"
+                    <!--  Action Model 直绑  -->
+                    <Label Content="Action Name"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding ActionModel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Action Enabled"/>
+                    <CheckBox Margin="0,0,0,8" IsChecked="{Binding ActionModel.Enabled, Mode=TwoWay}"/>
+                    <Label Content="Delay (ms)"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding ActionModel.DelayMs, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Margin="0,8,0,8"
                                Foreground="#1B5E20"
                                TextWrapping="Wrap">
-                        VM 用代理属性包装 User + Address，View 看不到 Model。
-                        <LineBreak/>
-                        <Run Foreground="#922B21" FontWeight="Bold">嵌套要点</Run>
-                        <Run Foreground="#1B5E20">：Address 是 Model 内部子对象，需额外订阅 Address.PropertyChanged 并在 switch 中转发；替换 Address 时必须解绑旧实例、绑新实例、刷新所有受影响属性。</Run>
-                    </TextBlock>
-
-                    <!--  User 区  -->
-                    <Label Content="Name"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Age"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding Age, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <!--  嵌套 Address 区  -->
-                    <Label Content="City (嵌套)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Country (嵌套)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="ZipCode (嵌套)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding ZipCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <!--  计算属性显示  -->
-                    <StackPanel Margin="0,8,0,8" Orientation="Horizontal">
-                        <TextBlock Foreground="#1F4E79" Text="IsAdult (Model层): "/>
-                        <TextBlock Foreground="#154360" FontWeight="Bold" Text="{Binding IsAdult}"/>
-                    </StackPanel>
-                    <TextBlock Margin="0,0,0,4"
-                               Foreground="#1F4E79"
-                               Text="{Binding FullAddress, StringFormat='FullAddress (Model层): {0}'}"
-                               TextWrapping="Wrap"/>
-                    <TextBlock Margin="0,0,0,8"
-                               Foreground="#922B21"
-                               Text="{Binding Summary, StringFormat='Summary (VM层): {0}'}"
-                               TextWrapping="Wrap"/>
-
-                    <!--  操作  -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                        <Button Command="{Binding ReplaceUserCommand}" Content="Replace Model" Margin="0,0,10,0"/>
-                        <Button Command="{Binding ReplaceAddressCommand}" Content="Replace Address" Margin="0,0,10,0"/>
-                        <Button Command="{Binding ModifyFromBackgroundCommand}" Content="Modify from background"/>
-                    </StackPanel>
-
-                    <TextBlock Foreground="#666666">
-                        <Run Text="{Binding ModelId, StringFormat='Model HashCode: {0}   ', Mode=OneWay}"/>
-                        <Run Text="{Binding AddressId, StringFormat='Address HashCode: {0}', Mode=OneWay}"/>
+                        <Run Text="编辑这里任一属性，直接写回 ActionModel；StepVm 通过 ForwardDerived 监听到 → Step.Summary 刷新。"/>
                     </TextBlock>
                 </StackPanel>
             </GroupBox>
 
             <!-- ============================================================ -->
-            <!--  方式③：代理属性 + 通用 ForwardProperties                       -->
+            <!--  Option 层（最内层）                                          -->
             <!-- ============================================================ -->
-            <GroupBox Header="方式③ Delegate —— 代理属性 {Binding City}，用 ModelBinder.ForwardProperties 收敛嵌套样板"
+            <GroupBox Header="③ Option 层（最内层）— {Binding Step.OptionModel.Value}"
                        Margin="0,0,0,10"
-                       DataContext="{Binding Delegate}">
+                       DataContext="{Binding Step}">
                 <StackPanel>
-                    <TextBlock Margin="0,0,0,6"
+                    <!--  Option Model 直绑  -->
+                    <Label Content="Option Name"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding OptionModel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Option Value"/>
+                    <TextBox Margin="0,0,0,8" Text="{Binding OptionModel.Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label Content="Option Enabled"/>
+                    <CheckBox Margin="0,0,0,8" IsChecked="{Binding OptionModel.Enabled, Mode=TwoWay}"/>
+
+                    <TextBlock Margin="0,4,0,0"
                                Foreground="#1B5E20"
                                TextWrapping="Wrap">
-                        代理属性结构同方式②，但用 Helpers/ModelBinder.ForwardProperties 一行声明 Model 多属性 → VM 属性（+派生）的映射，消除冗长 switch。
+                        <Run Foreground="#1B5E20">编辑这里任一属性，直接写回 OptionModel，同时跨层转发：</Run>
                         <LineBreak/>
-                        嵌套时为外层 User 和内层 Address 各调一次 ForwardProperties；替换实例时重新调用即可重订阅。
+                        <Run Foreground="#666666">OptionModel.Name 变 → ActionVm.ForwardDerived 监听到 → ActionVm.Summary 刷新 → StepVm.ForwardDerived 监听到 → StepVm.Summary 刷新</Run>
                     </TextBlock>
+                </StackPanel>
+            </GroupBox>
 
-                    <!--  User 区  -->
-                    <Label Content="Name"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Age"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding Age, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <!--  嵌套 Address 区  -->
-                    <Label Content="City (嵌套)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding City, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="Country (嵌套)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding Country, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <Label Content="ZipCode (嵌套)"/>
-                    <TextBox Margin="0,0,0,8" Text="{Binding ZipCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <!--  计算属性显示  -->
-                    <StackPanel Margin="0,8,0,8" Orientation="Horizontal">
-                        <TextBlock Foreground="#1F4E79" Text="IsAdult (Model层): "/>
-                        <TextBlock Foreground="#154360" FontWeight="Bold" Text="{Binding IsAdult}"/>
-                    </StackPanel>
-                    <TextBlock Margin="0,0,0,4"
-                               Foreground="#1F4E79"
-                               Text="{Binding FullAddress, StringFormat='FullAddress (Model层): {0}'}"
-                               TextWrapping="Wrap"/>
-                    <TextBlock Margin="0,0,0,8"
-                               Foreground="#922B21"
-                               Text="{Binding Summary, StringFormat='Summary (VM层): {0}'}"
-                               TextWrapping="Wrap"/>
-
-                    <!--  操作  -->
+            <!-- ============================================================ -->
+            <!--  操作区                                                      -->
+            <!-- ============================================================ -->
+            <GroupBox Header="操作（验证订阅迁移与跨层通知）" Margin="0,0,0,10"
+                       DataContext="{Binding Step}">
+                <StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                        <Button Command="{Binding ReplaceUserCommand}" Content="Replace Model" Margin="0,0,10,0"/>
-                        <Button Command="{Binding ReplaceAddressCommand}" Content="Replace Address" Margin="0,0,10,0"/>
-                        <Button Command="{Binding ModifyFromBackgroundCommand}" Content="Modify from background"/>
+                        <Button Command="{Binding ReplaceStepCommand}" Content="Replace Step" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ReplaceActionCommand}" Content="Replace Action" Margin="0,0,10,0"/>
+                        <Button Command="{Binding ModifyFromBackgroundCommand}" Content="Modify Option.Value from background"/>
                     </StackPanel>
-
-                    <TextBlock Foreground="#666666">
-                        <Run Text="{Binding ModelId, StringFormat='Model HashCode: {0}   ', Mode=OneWay}"/>
-                        <Run Text="{Binding AddressId, StringFormat='Address HashCode: {0}', Mode=OneWay}"/>
+                    <TextBlock Foreground="#666666" TextWrapping="Wrap">
+                        <Run Text="Replace Step：整个三层重建（Step/Action/Option Model 全部替换，订阅自动迁移）；"/>
+                        <LineBreak/>
+                        <Run Text="Modify from background：后台线程改 OptionModel.Value，验证三层 Summary 都刷新。"/>
                     </TextBlock>
                 </StackPanel>
             </GroupBox>
