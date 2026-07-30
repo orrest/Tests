@@ -2,10 +2,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Tests.Wpf.ModelNotification.Direct.Models;
 using Tests.Wpf.ModelNotification.Helpers;
-using Tests.Wpf.ModelNotification.Models;
 
-namespace Tests.Wpf.ModelNotification;
+namespace Tests.Wpf.ModelNotification.Direct;
 
 /// <summary>
 /// Middle-layer ViewModel. Exposes the underlying <see cref="ActionModel"/> directly
@@ -30,8 +30,8 @@ public partial class ActionViewModel : ObservableObject
     /// <summary>Holds the下层 VM 集合. View binds ItemsControl to this.</summary>
     public ObservableCollection<OptionViewModel> Options { get; }
 
-    private ModelBinder.ModelSubscription? _actionSub;
-    private ModelBinder.ModelSubscription? _optionsColSub;
+    private PropertyChangeTracker.ModelSubscription? _actionSub;
+    private PropertyChangeTracker.ModelSubscription? _optionsColSub;
 
     public ActionViewModel()
     {
@@ -62,7 +62,7 @@ public partial class ActionViewModel : ObservableObject
     private void BindAction()
     {
         _actionSub?.Dispose();
-        _actionSub = ModelBinder.Subscribe(
+        _actionSub = PropertyChangeTracker.Subscribe(
             Model,
             [nameof(ActionModel.Name), nameof(ActionModel.Enabled)],
             _ => OnPropertyChanged(nameof(Summary)));
@@ -75,7 +75,7 @@ public partial class ActionViewModel : ObservableObject
     private void BindOptions()
     {
         _optionsColSub?.Dispose();
-        _optionsColSub = ModelBinder.SubscribeCollection(
+        _optionsColSub = PropertyChangeTracker.SubscribeCollection(
             Options,
             (OptionViewModel ovm) => ovm.Model,
             [nameof(OptionModel.Name), nameof(OptionModel.Value)],

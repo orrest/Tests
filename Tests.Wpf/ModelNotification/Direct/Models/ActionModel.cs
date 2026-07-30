@@ -1,7 +1,7 @@
 using Bogus;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Tests.Wpf.ModelNotification.Models;
+namespace Tests.Wpf.ModelNotification.Direct.Models;
 
 /// <summary>
 /// Middle-layer Model. Holds a single nested <see cref="OptionModel"/>.

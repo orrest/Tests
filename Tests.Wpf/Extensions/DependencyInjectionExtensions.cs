@@ -45,7 +45,9 @@ public static class DependencyInjectionExtensions
 
                 // Model notification demo - three-layer nested scenario (StepVm → ActionVm → OptionVm)
                 // ActionVm/OptionVm are created internally by StepViewModel, only StepViewModel needs registration.
-                sc.AddSingleton<StepViewModel>();
+                // Direct: VM 直接暴露 Model (ObservableObject); Delegate: VM 代理属性，Model 为 POCO。
+                sc.AddSingleton<Tests.Wpf.ModelNotification.Direct.StepViewModel>();
+                sc.AddSingleton<Tests.Wpf.ModelNotification.Delegate.StepViewModel>();
                 sc.AddSingletonForNavigation(typeof(ModelNotificationView), typeof(ModelNotificationViewModel));
             }
         );

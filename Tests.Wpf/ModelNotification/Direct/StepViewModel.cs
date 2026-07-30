@@ -5,10 +5,10 @@ using System.Windows;
 using Bogus;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Tests.Wpf.ModelNotification.Direct.Models;
 using Tests.Wpf.ModelNotification.Helpers;
-using Tests.Wpf.ModelNotification.Models;
 
-namespace Tests.Wpf.ModelNotification;
+namespace Tests.Wpf.ModelNotification.Direct;
 
 /// <summary>
 /// Top-layer ViewModel. Exposes the underlying <see cref="StepModel"/> directly
@@ -31,9 +31,9 @@ public partial class StepViewModel : ObservableObject
     /// <summary>Holds the下层 VM 集合. View binds ItemsControl to this.</summary>
     public ObservableCollection<ActionViewModel> Actions { get; }
 
-    private ModelBinder.ModelSubscription? _stepSub;
-    private ModelBinder.ModelSubscription? _actionsColSub;
-    private ModelBinder.ModelSubscription? _allOptionsSub;
+    private PropertyChangeTracker.ModelSubscription? _stepSub;
+    private PropertyChangeTracker.ModelSubscription? _actionsColSub;
+    private PropertyChangeTracker.ModelSubscription? _allOptionsSub;
 
     private static readonly Faker Faker = Tests.Wpf.Helpers.FakerHelper.INSTANCE;
 
@@ -69,7 +69,7 @@ public partial class StepViewModel : ObservableObject
     private void BindStep()
     {
         _stepSub?.Dispose();
-        _stepSub = ModelBinder.Subscribe(
+        _stepSub = PropertyChangeTracker.Subscribe(
             Model,
             [nameof(StepModel.Name), nameof(StepModel.Enabled)],
             _ => OnPropertyChanged(nameof(Summary)));
@@ -82,7 +82,7 @@ public partial class StepViewModel : ObservableObject
     private void BindActions()
     {
         _actionsColSub?.Dispose();
-        _actionsColSub = ModelBinder.SubscribeCollection(
+        _actionsColSub = PropertyChangeTracker.SubscribeCollection(
             Actions,
             [nameof(ActionViewModel.Summary)],
             () => OnPropertyChanged(nameof(Summary)));
@@ -103,7 +103,7 @@ public partial class StepViewModel : ObservableObject
         var innerSubs = new List<IDisposable>();
         foreach (var action in Actions)
         {
-            var sub = ModelBinder.SubscribeCollection(
+            var sub = PropertyChangeTracker.SubscribeCollection(
                 action.Options,
                 (OptionViewModel ovm) => ovm.Model,
                 [nameof(OptionModel.Name), nameof(OptionModel.Value), nameof(OptionModel.Enabled)],
@@ -120,7 +120,7 @@ public partial class StepViewModel : ObservableObject
         };
         Actions.CollectionChanged += onActionsChanged;
 
-        _allOptionsSub = new ModelBinder.ModelSubscription(() =>
+        _allOptionsSub = new PropertyChangeTracker.ModelSubscription(() =>
         {
             foreach (var sub in innerSubs)
                 sub.Dispose();

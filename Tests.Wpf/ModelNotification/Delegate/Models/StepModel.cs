@@ -1,26 +1,22 @@
 using Bogus;
-using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Tests.Wpf.ModelNotification.Models;
+namespace Tests.Wpf.ModelNotification.Delegate.Models;
 
 /// <summary>
 /// Top-layer Model. Holds a single nested <see cref="ActionModel"/>.
-/// Collection semantics live in the VM layer (StepViewModel.Actions), Model stays pure data.
-/// 顶层 Model，持有一个 <see cref="ActionModel"/>。集合语义在 VM 层，Model 保持纯数据。
+/// Collection semantics live in the VM layer (StepViewModel.Actions), Model stays pure POCO data.
+/// 顶层 Model，持有一个 <see cref="ActionModel"/>。集合语义在 VM 层，Model 保持纯 POCO 数据。
 /// </summary>
-public partial class StepModel : ObservableObject
+public class StepModel
 {
     /// <summary>Step name.</summary>
-    [ObservableProperty]
-    public partial string Name { get; set; } = "Step";
+    public string Name { get; set; } = "Step";
 
     /// <summary>Whether this step is enabled.</summary>
-    [ObservableProperty]
-    public partial bool Enabled { get; set; } = true;
+    public bool Enabled { get; set; } = true;
 
-    /// <summary>Nested middle-layer Model. Replacing this instance triggers property-changed notification.</summary>
-    [ObservableProperty]
-    public partial ActionModel Action { get; set; }
+    /// <summary>Nested middle-layer Model. The wrapping VM exposes this via a proxy StepViewModel.Action.</summary>
+    public ActionModel Action { get; set; }
 
     public StepModel()
     {

@@ -1,7 +1,7 @@
 using Bogus;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace Tests.Wpf.ModelNotification.Models;
+namespace Tests.Wpf.ModelNotification.Direct.Models;
 
 /// <summary>
 /// Innermost Model of the three-layer nested scenario. Pure data, observable for binding.

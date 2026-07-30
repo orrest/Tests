@@ -17,7 +17,7 @@ namespace Tests.Wpf.ModelNotification.Helpers;
 /// </list>
 /// </para>
 /// </summary>
-public static class ModelBinder
+public static class PropertyChangeTracker
 {
     /// <summary>
     /// 监听 <paramref name="source"/> 上指定的属性变化，匹配时回调 <paramref name="onChanged"/>。

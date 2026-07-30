@@ -1,7 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Tests.Wpf.ModelNotification.Models;
+using Tests.Wpf.ModelNotification.Direct.Models;
 
-namespace Tests.Wpf.ModelNotification;
+namespace Tests.Wpf.ModelNotification.Direct;
 
 /// <summary>
 /// Innermost ViewModel. Exposes the underlying <see cref="OptionModel"/> directly.
