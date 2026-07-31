@@ -36,6 +36,7 @@ public partial class MainViewModel : ObservableRecipient
             new("Design time data", "DesignTimeDataView"),
             new("Drag drop", "DragDropView"),
             new("Grid splitter", "GridSplitterView"),
+            new("In-page navigation", "InPageNavigationView"),
             new("Message box", "MessageBoxView"),
             new("Model notification", "ModelNotificationView"),
             new("Progress", "ProgressMaskView"),

@@ -6,6 +6,7 @@ using Tests.Wpf.Controls;
 using Tests.Wpf.CustomizedMessageBox;
 using Tests.Wpf.DesignTimeData;
 using Tests.Wpf.DragDrop;
+using Tests.Wpf.InPageNavigation;
 using Tests.Wpf.Medias;
 using Tests.Wpf.ModelNotification;
 using Tests.Wpf.ProgressMask;
@@ -41,6 +42,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(SnackbarView), typeof(SnackbarViewModel));
                 sc.AddSingletonForNavigation(typeof(StylePriorityView), typeof(StylePriorityViewModel));
                 sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
+                sc.AddSingletonForNavigation(typeof(InPageNavigationView), typeof(InPageNavigationViewModel));
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
 
                 // Model notification demo - three-layer nested scenario (StepVm → ActionVm → OptionVm)
