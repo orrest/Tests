@@ -105,19 +105,20 @@ public partial class ActionViewModel : ObservableObject
 
     // ===== 订阅管理 =====
 
-    /// <summary>监听自身（VM）Name/Enabled 变化 → 刷新 Summary。代理属性 setter 已在 VM 上引发通知。</summary>
+    /// <summary>监听自身（VM）Name/Enabled 变化 → 反射触发 Summary 通知。代理属性 setter 已在 VM 上引发通知。</summary>
     private void BindAction()
     {
         _actionSub?.Dispose();
         _actionSub = PropertyChangeTracker.Subscribe(
             this,
             [nameof(Name), nameof(Enabled)],
-            _ => OnPropertyChanged(nameof(Summary)));
+            this,
+            [nameof(Summary)]);
     }
 
     /// <summary>
-    /// 监听 Options 集合中每个 OptionVm <b>自身</b>的 Name/Value 变化 + 集合增删 → 刷新 Summary。
-    /// 用 identity 重载（selector = e => e）直接订阅 OptionViewModel，而非 ovm.Model——因为 OptionVm 是
+    /// 监听 Options 集合中每个 OptionVm <b>自身</b>的 Name/Value 变化 + 集合增删 → 反射触发 Summary 通知。
+    /// selector 为 identity（<c>e => e</c>）直接订阅 OptionViewModel，而非 ovm.Model——因为 OptionVm 是
     /// ObservableObject 且经代理属性引发通知，无需也无法监听 POCO Model。
     /// </summary>
     private void BindOptions()
@@ -125,8 +126,10 @@ public partial class ActionViewModel : ObservableObject
         _optionsColSub?.Dispose();
         _optionsColSub = PropertyChangeTracker.SubscribeCollection(
             Options,
+            (OptionViewModel e) => e,
             [nameof(OptionViewModel.Name), nameof(OptionViewModel.Value)],
-            () => OnPropertyChanged(nameof(Summary)));
+            this,
+            [nameof(Summary)]);
     }
 
     // ===== 命令 =====

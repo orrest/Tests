@@ -266,7 +266,7 @@
                                        Foreground="#922B21"
                                        FontSize="14"
                                        FontWeight="Bold"
-                                       Text="{Binding AllOptionsSummary, StringFormat='Step.AllOptionsSummary (顶层聚合): {0}'}"
+                                       Text="{Binding AllOptionsSummary, StringFormat='Step.AllOptionsSummary: {0}'}"
                                        TextWrapping="Wrap"/>
 
                             <TextBlock Foreground="#666666">
@@ -348,6 +348,54 @@
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
                             </ItemsControl>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- ============================================================ -->
+                    <!--  ③ 跨兄弟 VM 订阅演示（SensorVm → EchoVm，经 StepVm 装配）    -->
+                    <!-- ============================================================ -->
+                    <GroupBox Header="③ 跨兄弟 VM 订阅演示 — StepVm 装配 SensorVm → EchoVm"
+                              Margin="0,0,0,10"
+                              DataContext="{Binding DelegateStep}">
+                        <StackPanel>
+                            <!--  说明  -->
+                            <TextBlock TextWrapping="Wrap"
+                                       Foreground="#333333"
+                                       LineHeight="22"
+                                       Margin="0,0,0,8">
+                                父 VM (<Run FontFamily="Consolas"
+                                        FontWeight="Bold">StepVm</Run>) 同时持有两个平级兄弟 VM：
+                                <Run Foreground="#6A1B9A"
+                                    FontWeight="Bold">SensorVm (vmA)</Run>
+                                与
+                                <Run Foreground="#6A1B9A"
+                                    FontWeight="Bold">EchoVm (vmB)</Run>。
+                                StepVm 通过 <Run FontFamily="Consolas"
+                                            FontWeight="Bold">PropertyChangeTracker.Subscribe</Run>
+                                监听 SensorVm.Level，回调中调用 EchoVm.Refresh()，使两个互不感知的兄弟 VM 完成联动。
+                                <LineBreak/>
+                                <Run Foreground="#6A1B9A"
+                                    FontWeight="Bold">链路：</Run>
+                                <Run FontFamily="Consolas">SensorVm.Level setter → StepVm.Subscribe 回调 → EchoVm.Refresh() → EchoVm.OnPropertyChanged(DisplayText)</Run>
+                            </TextBlock>
+
+                            <!--  SensorVm (vmA) 输入  -->
+                            <Label Content="SensorVm.Level (vmA, 编辑触发通知)"
+                                   Foreground="#6A1B9A"/>
+                            <TextBox Margin="0,0,0,8"
+                                     Text="{Binding Sensor.Level, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     FontFamily="Consolas"/>
+
+                            <!--  EchoVm (vmB) 派生显示  -->
+                            <Label Content="EchoVm.DisplayText (vmB, 经 StepVm 订阅回调刷新)"
+                                   Foreground="#6A1B9A"/>
+                            <TextBlock Margin="0,0,0,8"
+                                       Foreground="#6A1B9A"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       FontFamily="Consolas"
+                                       Text="{Binding Echo.DisplayText}"
+                                       TextWrapping="Wrap"/>
                         </StackPanel>
                     </GroupBox>
 

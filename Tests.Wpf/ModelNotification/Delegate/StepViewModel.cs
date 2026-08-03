@@ -22,6 +22,15 @@ namespace Tests.Wpf.ModelNotification.Delegate;
 /// → StepVm.SubscribeCollection 监听 ActionVm.Summary → StepVm OnPropertyChanged(Summary)。
 /// 全程订阅的是<b>下层 VM</b>（ObservableObject），而非下层 POCO Model（无法被监听）。
 /// </para>
+/// <para>
+/// <b>跨兄弟 VM 订阅演示</b>（见 <see cref="Sensor"/> / <see cref="Echo"/> 与 <see cref="BindSensor"/>）：
+/// SensorVm.Level 变 → StepVm 用反射重载 Subscribe 监听 SensorVm → 反射委托直接调用 EchoVm.OnPropertyChanged(DisplayText)
+/// → EchoVm 的派生属性通知 View。父 VM 充当编排者，把两个平级兄弟 VM 间的依赖装配起来，EchoVm 自身无需 Refresh 方法。
+/// Cross-sibling VM subscription demo: SensorVm.Level change is observed by StepVm via the reflection
+/// Subscribe overload, whose compiled delegate invokes EchoVm.OnPropertyChanged(DisplayText) directly,
+/// so EchoVm needs no Refresh method. The parent VM orchestrates the dependency between two sibling VMs
+/// that know nothing of each other's lifecycle.
+/// </para>
 /// </summary>
 public partial class StepViewModel : ObservableObject
 {
@@ -36,15 +45,36 @@ public partial class StepViewModel : ObservableObject
     private PropertyChangeTracker.ModelSubscription? _actionsColSub;
     private PropertyChangeTracker.ModelSubscription? _allOptionsSub;
 
+    /// <summary>
+    /// Sibling vmA for the cross-VM subscription demo. Its <see cref="SensorViewModel.Level"/> changes
+    /// are observed via <see cref="BindSensor"/> and forwarded to <see cref="Echo"/>.
+    /// 跨 VM 订阅演示用的兄弟 vmA；其 <see cref="SensorViewModel.Level"/> 变化经
+    /// <see cref="BindSensor"/> 监听并转发给 <see cref="Echo"/>。
+    /// </summary>
+    public SensorViewModel Sensor { get; }
+
+    /// <summary>
+    /// Sibling vmB whose <see cref="EchoViewModel.DisplayText"/> is refreshed whenever <see cref="Sensor"/> changes.
+    /// EchoVm itself never subscribes; the parent VM wires the subscription in <see cref="BindSensor"/>.
+    /// 兄弟 vmB，每当 <see cref="Sensor"/> 变化时刷新其 <see cref="EchoViewModel.DisplayText"/>。
+    /// EchoVm 自身不订阅；订阅由父 VM 在 <see cref="BindSensor"/> 中装配。
+    /// </summary>
+    public EchoViewModel Echo { get; }
+
+    private PropertyChangeTracker.ModelSubscription? _sensorSub;
+
     private static readonly Faker Faker = Tests.Wpf.Helpers.FakerHelper.INSTANCE;
 
     public StepViewModel()
     {
         Model = StepModel.CreateRandom();
         Actions = [new ActionViewModel(Model.Action)];
+        Sensor = new SensorViewModel();
+        Echo = new EchoViewModel(Sensor);
         BindStep();
         BindActions();
         BindAllOptions();
+        BindSensor();
     }
 
     // ===== 代理属性：读取自 POCO，写入同时更新 POCO 并在 VM 自身引发通知 =====
@@ -96,18 +126,19 @@ public partial class StepViewModel : ObservableObject
 
     // ===== 订阅管理 =====
 
-    /// <summary>监听自身（VM）Name/Enabled 变化 → 刷新 Summary。代理属性 setter 已在 VM 上引发通知。</summary>
+    /// <summary>监听自身（VM）Name/Enabled 变化 → 反射触发 Summary 通知。代理属性 setter 已在 VM 上引发通知。</summary>
     private void BindStep()
     {
         _stepSub?.Dispose();
         _stepSub = PropertyChangeTracker.Subscribe(
             this,
             [nameof(Name), nameof(Enabled)],
-            _ => OnPropertyChanged(nameof(Summary)));
+            this,
+            [nameof(Summary)]);
     }
 
     /// <summary>
-    /// 监听 Actions 集合中所有 ActionVm 的 Summary 变化 + 集合增删 → 刷新 Summary。
+    /// 监听 Actions 集合中所有 ActionVm 的 Summary 变化 + 集合增删 → 反射触发 Summary 通知。
     /// Summary 是 ActionVm 属性，ActionVm 是 ObservableObject，可直接订阅——与 Direct 版一致。
     /// </summary>
     private void BindActions()
@@ -115,13 +146,15 @@ public partial class StepViewModel : ObservableObject
         _actionsColSub?.Dispose();
         _actionsColSub = PropertyChangeTracker.SubscribeCollection(
             Actions,
+            (ActionViewModel e) => e,
             [nameof(ActionViewModel.Summary)],
-            () => OnPropertyChanged(nameof(Summary)));
+            this,
+            [nameof(Summary)]);
     }
 
     /// <summary>
-    /// 直接监听所有 Action 下每个 OptionVm <b>自身</b>的 Name/Value/Enabled 变化（用 identity 重载，
-    /// 而非 ovm.Model），以及 Actions 集合的增删变动 → 刷新 AllOptionsSummary。
+    /// 直接监听所有 Action 下每个 OptionVm <b>自身</b>的 Name/Value/Enabled 变化（selector 为 identity，
+    /// 而非 ovm.Model），以及 Actions 集合的增删变动 → 反射触发 AllOptionsSummary 通知。
     /// <para>
     /// 不同于 BindActions 的逐层通知（Option→Action→Step Summary），此方法直连 OptionVm 层，
     /// 确保 AllOptionsSummary 在 OptionVm 代理属性变更时即时刷新，无需依赖逐层传递。
@@ -136,8 +169,10 @@ public partial class StepViewModel : ObservableObject
         {
             var sub = PropertyChangeTracker.SubscribeCollection(
                 action.Options,
+                (OptionViewModel e) => e,
                 [nameof(OptionViewModel.Name), nameof(OptionViewModel.Value), nameof(OptionViewModel.Enabled)],
-                () => OnPropertyChanged(nameof(AllOptionsSummary)));
+                this,
+                [nameof(AllOptionsSummary)]);
             if (sub is not null)
                 innerSubs.Add(sub);
         }
@@ -156,6 +191,33 @@ public partial class StepViewModel : ObservableObject
                 sub.Dispose();
             Actions.CollectionChanged -= onActionsChanged;
         });
+    }
+
+    /// <summary>
+    /// Wire the cross-sibling-VM subscription: observe <see cref="Sensor"/>.<see cref="SensorViewModel.Level"/>
+    /// via the reflection overload <see cref="PropertyChangeTracker.Subscribe{TSource, TTarget}"/>, which
+    /// directly invokes <c>OnPropertyChanged(DisplayText)</c> on <see cref="Echo"/> — EchoVm needs no
+    /// <c>Refresh</c> method. The reflection delegate is compiled once at subscription time, so per-callback
+    /// cost is close to a direct method call.
+    /// 装配跨兄弟 VM 订阅：通过反射重载 <see cref="PropertyChangeTracker.Subscribe{TSource, TTarget}"/>
+    /// 监听 <see cref="Sensor"/>.<see cref="SensorViewModel.Level"/>，直接在 <see cref="Echo"/> 上调用
+    /// <c>OnPropertyChanged(DisplayText)</c> —— EchoVm 无需任何 <c>Refresh</c> 方法。
+    /// 反射委托在订阅时一次性编译，单次回调开销接近直接方法调用。
+    /// <para>
+    /// Pattern note: same shape as <see cref="BindStep"/> (single-source Subscribe), but uses the reflection
+    /// overload to bypass the <c>protected</c> accessibility of <c>OnPropertyChanged</c> on EchoVm.
+    /// 模式提示：与 <see cref="BindStep"/>（单源 Subscribe）形态相同，但使用反射重载绕过 EchoVm 上
+    /// <c>OnPropertyChanged</c> 的 <c>protected</c> 可见性限制。
+    /// </para>
+    /// </summary>
+    private void BindSensor()
+    {
+        _sensorSub?.Dispose();
+        _sensorSub = PropertyChangeTracker.Subscribe(
+            Sensor,
+            [nameof(SensorViewModel.Level)],
+            Echo,
+            [nameof(EchoViewModel.DisplayText)]);
     }
 
     // ===== 命令 =====

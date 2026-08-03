@@ -58,18 +58,19 @@ public partial class ActionViewModel : ObservableObject
 
     // ===== 订阅管理 =====
 
-    /// <summary>监听自身 Model.Name/Enabled 变化 → 刷新 Summary。</summary>
+    /// <summary>监听自身 Model.Name/Enabled 变化 → 反射触发 Summary 通知。</summary>
     private void BindAction()
     {
         _actionSub?.Dispose();
         _actionSub = PropertyChangeTracker.Subscribe(
             Model,
             [nameof(ActionModel.Name), nameof(ActionModel.Enabled)],
-            _ => OnPropertyChanged(nameof(Summary)));
+            this,
+            [nameof(Summary)]);
     }
 
     /// <summary>
-    /// 监听 Options 集合中每个 OptionVm 的 <c>Model</c>（OptionModel）的 Name/Value 变化 + 集合增删 → 刷新 Summary。
+    /// 监听 Options 集合中每个 OptionVm 的 <c>Model</c>（OptionModel）的 Name/Value 变化 + 集合增删 → 反射触发 Summary 通知。
     /// selector <c>ovm => ovm.Model</c> 提取出 OptionModel 实例直接订阅其属性变化，无需代理属性中转。
     /// </summary>
     private void BindOptions()
@@ -79,7 +80,8 @@ public partial class ActionViewModel : ObservableObject
             Options,
             (OptionViewModel ovm) => ovm.Model,
             [nameof(OptionModel.Name), nameof(OptionModel.Value)],
-            () => OnPropertyChanged(nameof(Summary)));
+            this,
+            [nameof(Summary)]);
     }
 
     // ===== 命令 =====

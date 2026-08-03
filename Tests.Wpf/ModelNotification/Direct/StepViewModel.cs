@@ -65,18 +65,19 @@ public partial class StepViewModel : ObservableObject
 
     // ===== 订阅管理 =====
 
-    /// <summary>监听自身 Model.Name/Enabled 变化 → 刷新 Summary。</summary>
+    /// <summary>监听自身 Model.Name/Enabled 变化 → 反射触发 Summary 通知。</summary>
     private void BindStep()
     {
         _stepSub?.Dispose();
         _stepSub = PropertyChangeTracker.Subscribe(
             Model,
             [nameof(StepModel.Name), nameof(StepModel.Enabled)],
-            _ => OnPropertyChanged(nameof(Summary)));
+            this,
+            [nameof(Summary)]);
     }
 
     /// <summary>
-    /// 监听 Actions 集合中所有 ActionVm 的 Summary 变化 + 集合增删 → 刷新 Summary。
+    /// 监听 Actions 集合中所有 ActionVm 的 Summary 变化 + 集合增删 → 反射触发 Summary 通知。
     /// SubscribeCollection 自动管理元素订阅（Add/Remove/Replace/Reset）。
     /// </summary>
     private void BindActions()
@@ -84,13 +85,15 @@ public partial class StepViewModel : ObservableObject
         _actionsColSub?.Dispose();
         _actionsColSub = PropertyChangeTracker.SubscribeCollection(
             Actions,
+            (ActionViewModel e) => e,
             [nameof(ActionViewModel.Summary)],
-            () => OnPropertyChanged(nameof(Summary)));
+            this,
+            [nameof(Summary)]);
     }
 
     /// <summary>
     /// 直接监听所有 Action 下每个 OptionViewModel.Model（OptionModel）的 Name/Value/Enabled 变化，
-    /// 以及 Actions 集合的增删变动 → 刷新 AllOptionsSummary。
+    /// 以及 Actions 集合的增删变动 → 反射触发 AllOptionsSummary 通知。
     /// <para>
     /// 不同于 BindActions 的逐层通知（Option→Action→Step Summary），此方法直连 Option 层，
     /// 确保 AllOptionsSummary 在 Option 属性变更时即时刷新，无需依赖逐层传递。
@@ -107,7 +110,8 @@ public partial class StepViewModel : ObservableObject
                 action.Options,
                 (OptionViewModel ovm) => ovm.Model,
                 [nameof(OptionModel.Name), nameof(OptionModel.Value), nameof(OptionModel.Enabled)],
-                () => OnPropertyChanged(nameof(AllOptionsSummary)));
+                this,
+                [nameof(AllOptionsSummary)]);
             if (sub is not null)
                 innerSubs.Add(sub);
         }
