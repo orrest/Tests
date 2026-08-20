@@ -35,6 +35,7 @@
             <converters:ContentLengthToVisibilityConverter x:Key="ContentLengthToVisibilityConverter" />
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:IsTypeConverter x:Key="IsTypeConverter" />
+            <converters:ViewModelToViewConverter x:Key="ViewModelToViewConverter" />
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Themes/TabItem.xaml" />

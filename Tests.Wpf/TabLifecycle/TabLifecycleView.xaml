@@ -1,0 +1,117 @@
+<tabLifecycle:LifecycleTabViewBase x:Class="Tests.Wpf.TabLifecycle.TabLifecycleView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:app="clr-namespace:Tests.Wpf"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:extensions="clr-namespace:Tests.Wpf.Extensions"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mr="clr-namespace:Tests.Wpf.TabLifecycle.MarkupResolved"
+             xmlns:tabLifecycle="clr-namespace:Tests.Wpf.TabLifecycle"
+             xmlns:vmf="clr-namespace:Tests.Wpf.TabLifecycle.ViewModelFirst"
+             d:DesignHeight="1000"
+             d:DesignWidth="900"
+             mc:Ignorable="d">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="12">
+            <TextBlock FontSize="16"
+                       FontWeight="Bold"
+                       Text="TabControl lifecycle demo (nested views &amp; viewmodels all transient)" />
+            <TextBlock Margin="0,6,0,0"
+                       Foreground="#444444"
+                       TextWrapping="Wrap">
+                <Run Text="All four tab controls use transient-registered child views and viewmodels. Watch the log panel below." />
+                <LineBreak />
+                <Run Text="① View-first — the page view ctor injects the child views; each child view ctor injects its vm and sets DataContext. All 3 pairs are built eagerly on page construction." />
+                <LineBreak />
+                <Run Text="② VM-first — the page viewmodel ctor injects the child vms; TabItem Content binds the vm and a DataTemplate resolves the transient view from DI lazily on first selection." />
+                <LineBreak />
+                <Run Text="③ VM-first, no DataTemplate — same as ② but TabItem Content binds through the converter directly; views are built eagerly on page load and preserved across tab switches." />
+                <LineBreak />
+                <Run Text="④ Markup-resolved — TabItems declare ContentControl placeholders; a UserControlBinding markup extension resolves the transient view (vm ctor-injected) from DI while parsing XAML." />
+                <LineBreak />
+                <Run Text="① ③ and ④ keep the same view instances across switches; ② rebuilds its views on every switch. Leaving this page and coming back creates brand-new instances everywhere." />
+            </TextBlock>
+
+            <GroupBox Margin="0,12,0,0"
+                      Header="① View-first — view ctor injects vm">
+                <TabControl>
+                    <TabItem x:Name="ViewFirstTabOne"
+                             Header="Tab one" />
+                    <TabItem x:Name="ViewFirstTabTwo"
+                             Header="Tab two" />
+                    <TabItem x:Name="ViewFirstTabThree"
+                             Header="Tab three" />
+                </TabControl>
+            </GroupBox>
+
+            <GroupBox Margin="0,12,0,0"
+                      Header="② VM-first — parent vm injects child vms, views bind them">
+                <TabControl>
+                    <TabControl.Resources>
+                        <DataTemplate DataType="{x:Type vmf:ContentOneViewModel}">
+                            <ContentControl Content="{Binding Converter={StaticResource ViewModelToViewConverter}}" />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vmf:ContentTwoViewModel}">
+                            <ContentControl Content="{Binding Converter={StaticResource ViewModelToViewConverter}}" />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type vmf:ContentThreeViewModel}">
+                            <ContentControl Content="{Binding Converter={StaticResource ViewModelToViewConverter}}" />
+                        </DataTemplate>
+                    </TabControl.Resources>
+                    <TabItem Content="{Binding ContentOne}"
+                             Header="Content one" />
+                    <TabItem Content="{Binding ContentTwo}"
+                             Header="Content two" />
+                    <TabItem Content="{Binding ContentThree}"
+                             Header="Content three" />
+                </TabControl>
+            </GroupBox>
+
+            <GroupBox Margin="0,12,0,0"
+                      Header="③ VM-first, no DataTemplate — TabItem Content binding resolves the view via converter">
+                <TabControl>
+                    <TabItem Content="{Binding DirectOne, Converter={StaticResource ViewModelToViewConverter}, ConverterParameter=AttachDataContext}"
+                             Header="Direct one" />
+                    <TabItem Content="{Binding DirectTwo, Converter={StaticResource ViewModelToViewConverter}, ConverterParameter=AttachDataContext}"
+                             Header="Direct two" />
+                    <TabItem Content="{Binding DirectThree, Converter={StaticResource ViewModelToViewConverter}, ConverterParameter=AttachDataContext}"
+                             Header="Direct three" />
+                </TabControl>
+            </GroupBox>
+
+            <GroupBox Margin="0,12,0,0"
+                      Header="④ Markup-resolved — ContentControl placeholders, markup extension resolves view+vm from DI in XAML">
+                <TabControl>
+                    <TabItem Header="Resolved one">
+                        <ContentControl Content="{extensions:UserControlBinding ServiceType={x:Type mr:ResolvedOneView}, Services={x:Static app:App.Services}}" />
+                    </TabItem>
+                    <TabItem Header="Resolved two">
+                        <ContentControl Content="{extensions:UserControlBinding ServiceType={x:Type mr:ResolvedTwoView}, Services={x:Static app:App.Services}}" />
+                    </TabItem>
+                    <TabItem Header="Resolved three">
+                        <ContentControl Content="{extensions:UserControlBinding ServiceType={x:Type mr:ResolvedThreeView}, Services={x:Static app:App.Services}}" />
+                    </TabItem>
+                </TabControl>
+            </GroupBox>
+
+            <GroupBox Margin="0,12,0,0"
+                      Header="Logs (ctor / Loaded / Unloaded / DataContextChanged, with timestamps)">
+                <StackPanel>
+                    <StackPanel Margin="0,0,0,8"
+                                Orientation="Horizontal">
+                        <Button Margin="0,0,8,0"
+                                Click="CheckAlive_Click"
+                                Content="Force GC &amp; check alive" />
+                        <Button Click="ClearLog_Click"
+                                Content="Clear log" />
+                    </StackPanel>
+                    <ListBox x:Name="LogList"
+                             Height="280"
+                             FontFamily="Consolas"
+                             FontSize="12"
+                             ItemsSource="{x:Static tabLifecycle:TabLifecycleLogger.Entries}" />
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</tabLifecycle:LifecycleTabViewBase>

@@ -7,6 +7,10 @@ namespace Tests.Wpf;
 
 public partial class App : Application
 {
+    // Root service provider for XAML-only paths (e.g. ViewModelToViewConverter).
+    // 根容器：供纯 XAML 路径（如 ViewModelToViewConverter）解析服务。
+    public static IServiceProvider Services { get; private set; } = null!;
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -14,6 +18,7 @@ public partial class App : Application
         var hostBuilder = Host.CreateDefaultBuilder().ConfigureViews();
 
         var host = hostBuilder.Build();
+        Services = host.Services;
 
         var mainWindow = host.Services.GetRequiredService<MainWindow>();
         mainWindow.Show();

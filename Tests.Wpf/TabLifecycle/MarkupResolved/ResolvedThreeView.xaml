@@ -1,0 +1,34 @@
+<tabLifecycle:LifecycleTabViewBase x:Class="Tests.Wpf.TabLifecycle.MarkupResolved.ResolvedThreeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tabLifecycle="clr-namespace:Tests.Wpf.TabLifecycle"
+             d:DesignHeight="180"
+             d:DesignWidth="420"
+             mc:Ignorable="d">
+    <Border Margin="10"
+            Padding="12"
+            BorderBrush="#8D6E63"
+            BorderThickness="1"
+            CornerRadius="4">
+        <StackPanel>
+            <TextBlock FontWeight="Bold"
+                       Foreground="#8D6E63"
+                       Text="④ Markup-resolved — ResolvedThreeView (view+vm from DI via markup extension)" />
+            <StackPanel Margin="0,10,0,0"
+                        Orientation="Horizontal">
+                <TextBlock Text="{Binding ViewId, RelativeSource={RelativeSource AncestorType={x:Type tabLifecycle:LifecycleTabViewBase}}, StringFormat='View #{0}'}" />
+                <TextBlock Margin="12,0,0,0"
+                           Text="{Binding InstanceId, StringFormat='VM #{0}'}" />
+                <TextBlock Margin="12,0,0,0"
+                           Text="{Binding LoadedCount, RelativeSource={RelativeSource AncestorType={x:Type tabLifecycle:LifecycleTabViewBase}}, StringFormat='Loaded {0}x'}" />
+            </StackPanel>
+            <TextBlock Margin="0,10,0,4"
+                       Text="Note (state probe — survives tab switches):" />
+            <TextBox Width="320"
+                     HorizontalAlignment="Left"
+                     Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
+    </Border>
+</tabLifecycle:LifecycleTabViewBase>

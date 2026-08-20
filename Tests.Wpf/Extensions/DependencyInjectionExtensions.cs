@@ -11,6 +11,11 @@ using Tests.Wpf.Medias;
 using Tests.Wpf.ModelNotification;
 using Tests.Wpf.ProgressMask;
 using Tests.Wpf.Snackbar;
+using Tests.Wpf.TabLifecycle;
+using Tests.Wpf.TabLifecycle.DirectBinding;
+using Tests.Wpf.TabLifecycle.MarkupResolved;
+using Tests.Wpf.TabLifecycle.ViewFirst;
+using Tests.Wpf.TabLifecycle.ViewModelFirst;
 using Tests.Wpf.Themes;
 using Tests.Wpf.Tree;
 using Tests.Wpf.Validations;
@@ -44,6 +49,35 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
                 sc.AddSingletonForNavigation(typeof(InPageNavigationView), typeof(InPageNavigationViewModel));
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
+
+                // Tab lifecycle demo: the page and all nested views/viewmodels are transient,
+                // so re-entering the page creates a fresh instance graph and the old one can be collected.
+                // Tab 生命周期演示：页面与所有嵌套 View/VM 均为 transient，重新进入页面即全新实例图。
+                sc.AddTransientForNavigation(typeof(TabLifecycleView), typeof(TabLifecycleViewModel));
+                sc.AddTransient<TabOneView>();
+                sc.AddTransient<TabOneViewModel>();
+                sc.AddTransient<TabTwoView>();
+                sc.AddTransient<TabTwoViewModel>();
+                sc.AddTransient<TabThreeView>();
+                sc.AddTransient<TabThreeViewModel>();
+                sc.AddTransient<ContentOneView>();
+                sc.AddTransient<ContentOneViewModel>();
+                sc.AddTransient<ContentTwoView>();
+                sc.AddTransient<ContentTwoViewModel>();
+                sc.AddTransient<ContentThreeView>();
+                sc.AddTransient<ContentThreeViewModel>();
+                sc.AddTransient<DirectOneView>();
+                sc.AddTransient<DirectOneViewModel>();
+                sc.AddTransient<DirectTwoView>();
+                sc.AddTransient<DirectTwoViewModel>();
+                sc.AddTransient<DirectThreeView>();
+                sc.AddTransient<DirectThreeViewModel>();
+                sc.AddTransient<ResolvedOneView>();
+                sc.AddTransient<ResolvedOneViewModel>();
+                sc.AddTransient<ResolvedTwoView>();
+                sc.AddTransient<ResolvedTwoViewModel>();
+                sc.AddTransient<ResolvedThreeView>();
+                sc.AddTransient<ResolvedThreeViewModel>();
 
                 // Model notification demo - three-layer nested scenario (StepVm → ActionVm → OptionVm)
                 // ActionVm/OptionVm are created internally by StepViewModel, only StepViewModel needs registration.
