@@ -16,4 +16,5 @@
   <Project Path="Tests.MSDI/Tests.MSDI.csproj" />
   <Project Path="Tests.Udp/Tests.Udp.csproj" />
   <Project Path="Tests.Wpf/Tests.Wpf.csproj" />
+  <Project Path="Tests.Wpf.AutomationPeer/Tests.Wpf.AutomationPeer.csproj" />
 </Solution>
