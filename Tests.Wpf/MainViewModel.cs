@@ -40,6 +40,7 @@ public partial class MainViewModel : ObservableRecipient
             new("Message box", "MessageBoxView"),
             new("Model notification", "ModelNotificationView"),
             new("Progress", "ProgressMaskView"),
+            new("Selected item", "SelectedItemView"),
             new("Snackbar", "SnackbarView"),
             new("Style priority", "StylePriorityView"),
             new("Tab lifecycle", "TabLifecycleView"),

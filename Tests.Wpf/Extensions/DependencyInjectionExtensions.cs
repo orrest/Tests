@@ -10,6 +10,7 @@ using Tests.Wpf.InPageNavigation;
 using Tests.Wpf.Medias;
 using Tests.Wpf.ModelNotification;
 using Tests.Wpf.ProgressMask;
+using Tests.Wpf.SelectedItem;
 using Tests.Wpf.Snackbar;
 using Tests.Wpf.TabLifecycle;
 using Tests.Wpf.TabLifecycle.DirectBinding;
@@ -49,6 +50,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(BorderView), typeof(BorderViewModel));
                 sc.AddSingletonForNavigation(typeof(InPageNavigationView), typeof(InPageNavigationViewModel));
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
+                sc.AddSingletonForNavigation(typeof(SelectedItemView), typeof(SelectedItemViewModel));
 
                 // Tab lifecycle demo: the page and all nested views/viewmodels are transient,
                 // so re-entering the page creates a fresh instance graph and the old one can be collected.

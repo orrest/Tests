@@ -1,0 +1,114 @@
+<UserControl x:Class="Tests.Wpf.SelectedItem.SelectedItemView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="600"
+             d:DesignWidth="900"
+             mc:Ignorable="d">
+    <TabControl>
+        <TabItem Header="Default DataGrid">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*"
+                                   MinHeight="180" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="140" />
+                </Grid.RowDefinitions>
+
+                <!--
+                    Switch SelectionUnit / SelectionMode at runtime to observe the impact on SelectedItem.
+                    运行时切换 SelectionUnit / SelectionMode，观察其对 SelectedItem 的影响。
+                -->
+                <StackPanel Grid.Row="0"
+                            Margin="0,0,0,8"
+                            Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" Text="SelectionUnit:" />
+                    <ComboBox Width="150"
+                              Margin="4,0,16,0"
+                              ItemsSource="{Binding SelectionUnits}"
+                              SelectedItem="{Binding SelectionUnit, Mode=TwoWay}" />
+                    <TextBlock VerticalAlignment="Center" Text="SelectionMode:" />
+                    <ComboBox Width="150"
+                              Margin="4,0,0,0"
+                              ItemsSource="{Binding SelectionModes}"
+                              SelectedItem="{Binding SelectionMode, Mode=TwoWay}" />
+                </StackPanel>
+
+                <!--
+                    A fully default DataGrid: columns are auto-generated, only ItemsSource and the two
+                    selection options are bound; SelectedItem is read back via code-behind on every
+                    SelectedCellsChanged (DataGrid.SelectedItems/SelectedCells do not raise INPC).
+                    完全默认的 DataGrid：列自动生成，仅绑定 ItemsSource 与两个选中选项；
+                    DataGrid.SelectedItems/SelectedCells 不支持变更通知，
+                    SelectedItem 读数由 code-behind 在 SelectedCellsChanged 中回读。
+                -->
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding Rows}"
+                          SelectedCellsChanged="OnMainGridSelectedCellsChanged"
+                          SelectionMode="{Binding SelectionMode, Mode=TwoWay}"
+                          SelectionUnit="{Binding SelectionUnit, Mode=TwoWay}" />
+
+                <!--
+                    Readouts mirrored from the DataGrid after every selection change.
+                    每次选中变化后从 DataGrid 同步的读数。
+                -->
+                <UniformGrid Grid.Row="2"
+                             Margin="0,8,0,0"
+                             Columns="3">
+                    <StackPanel Margin="0,0,12,0"
+                                Orientation="Horizontal">
+                        <TextBlock FontWeight="Bold" Text="SelectedItem: " />
+                        <TextBlock Text="{Binding SelectedItem, TargetNullValue=(null)}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,12,0"
+                                Orientation="Horizontal">
+                        <TextBlock FontWeight="Bold" Text="SelectedIndex: " />
+                        <TextBlock Text="{Binding SelectedIndex}" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontWeight="Bold" Text="SelectedCells.Count: " />
+                        <TextBlock Text="{Binding SelectedCellCount}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,4,12,0"
+                                Orientation="Horizontal">
+                        <TextBlock FontWeight="Bold" Text="SelectedItems: " />
+                        <TextBlock Text="{Binding SelectedItemsText}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,4,0,0"
+                                Orientation="Horizontal">
+                        <TextBlock FontWeight="Bold" Text="CurrentCell: " />
+                        <TextBlock Text="{Binding CurrentCellText}" />
+                    </StackPanel>
+                </UniformGrid>
+
+                <!--
+                    Expected results for quick cross-checking while clicking:
+                    FullRow: clicking a row sets SelectedItem/SelectedItems.
+                    Cell: clicking a cell leaves SelectedItem null, only SelectedCells changes.
+                    CellOrRowHeader: row header click selects the row, cell click selects the cell only.
+                    Extended: Ctrl/Shift multi-select fills SelectedItems/SelectedCells.
+                    供点击时快速对照的预期结果：
+                    FullRow：点行 -> SelectedItem/SelectedItems 更新为该行。
+                    Cell：点单元格 -> SelectedItem 保持 null，仅 SelectedCells 变化。
+                    CellOrRowHeader：点行头选中整行，点单元格仅选中单元格。
+                    Extended：Ctrl/Shift 多选，SelectedItems/SelectedCells 含多项。
+                -->
+                <TextBlock Grid.Row="3"
+                           Margin="0,8,0,0"
+                           Foreground="Gray"
+                           Text="FullRow: click a row -> SelectedItem/SelectedItems update. Cell: click a cell -> SelectedItem stays null, only SelectedCells changes. CellOrRowHeader: click row header -> row selected; click cell -> cell only. Extended: Ctrl/Shift multi-select."
+                           TextWrapping="Wrap" />
+
+                <ListBox Grid.Row="4"
+                         Margin="0,8,0,0"
+                         BorderBrush="LightGray"
+                         BorderThickness="1"
+                         ItemsSource="{Binding EventLog}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto" />
+            </Grid>
+        </TabItem>
+    </TabControl>
+</UserControl>
