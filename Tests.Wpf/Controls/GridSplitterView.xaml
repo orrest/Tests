@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Tests.Wpf.Controls.GridSplitterView"
+<UserControl x:Class="Tests.Wpf.Controls.GridSplitterView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -8,83 +8,190 @@
              d:DesignHeight="450"
              d:DesignWidth="800"
              mc:Ignorable="d">
-    <StackPanel>
-        <TextBlock>
-            <Hyperlink NavigateUri="https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/how-to-resize-columns-with-a-gridsplitter" RequestNavigate="Hyperlink_RequestNavigate">
-                How to: Resize Columns with a GridSplitter
-            </Hyperlink>
-        </TextBlock>
+    <TabControl>
+        <TabItem Header="Basic">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock>
+                        <Hyperlink NavigateUri="https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/how-to-resize-columns-with-a-gridsplitter" RequestNavigate="Hyperlink_RequestNavigate">
+                            How to: Resize Columns with a GridSplitter
+                        </Hyperlink>
+                    </TextBlock>
 
 
-        <StackPanel Height="120">
-            <Label Content="GridSplitter that overlays the edge of a column" />
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="7*" />
-                    <ColumnDefinition Width="3*" />
-                </Grid.ColumnDefinitions>
-                <DockPanel Grid.Column="0"
-                           Height="120"
-                           Background="AliceBlue" />
-                <GridSplitter Grid.Column="1"
-                              Width="3"
-                              HorizontalAlignment="Left"
-                              VerticalAlignment="Stretch"
-                              Panel.ZIndex="99"
-                              Background="Black"
-                              ShowsPreview="False" />
-                <DockPanel Grid.Column="1"
-                           Height="120"
-                           Background="Bisque" />
+                    <StackPanel Height="120">
+                        <Label Content="GridSplitter that overlays the edge of a column" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="7*" />
+                                <ColumnDefinition Width="3*" />
+                            </Grid.ColumnDefinitions>
+                            <DockPanel Grid.Column="0"
+                                       Height="120"
+                                       Background="AliceBlue" />
+                            <GridSplitter Grid.Column="1"
+                                          Width="3"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Stretch"
+                                          Panel.ZIndex="99"
+                                          Background="Black"
+                                          ShowsPreview="False" />
+                            <DockPanel Grid.Column="1"
+                                       Height="120"
+                                       Background="Bisque" />
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Height="120">
+                        <Label Content="GridSplitter that occupies a column" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="7*" />
+                            </Grid.ColumnDefinitions>
+                            <DockPanel Grid.Column="0"
+                                       Height="120"
+                                       Background="AliceBlue" />
+                            <GridSplitter Grid.Column="1"
+                                          Width="3"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Stretch"
+                                          Panel.ZIndex="99"
+                                          Background="Black"
+                                          ShowsPreview="False" />
+                            <DockPanel Grid.Column="2"
+                                       Height="120"
+                                       Background="Bisque" />
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel Height="120">
+                        <Label Content="Try to find the bug in code :)" Foreground="Red" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <DockPanel Grid.Column="0"
+                                       Height="120"
+                                       Background="AliceBlue" />
+                            <GridSplitter Grid.Column="1"
+                                          Width="3"
+                                          HorizontalAlignment="Left"
+                                          VerticalAlignment="Stretch"
+                                          Panel.ZIndex="99"
+                                          Background="Black"
+                                          ShowsPreview="False" />
+                            <DockPanel Grid.Column="2"
+                                       Height="120"
+                                       Background="Bisque" />
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
+        <!--
+            Bottom-docked expanders resized by a Thumb on the top edge: the expander row is
+            plain auto and no splitter row is needed. Dragging the Thumb changes the content
+            Grid's Height, and because the row is auto-sized the Expander itself grows or
+            shrinks; collapsing restores the initial bottom layout.
+        -->
+        <!-- 底部停靠 Expander,用顶边 Thumb 调整高度:Expander 行就是普通 Auto 行,不需要分隔条行;拖动 Thumb 改变内容 Grid 的 Height,外层行是 Auto,Expander 自身随之变高变矮;收起后恢复初始底部布局。 -->
+        <TabItem Header="Bottom Expanders">
+            <Grid x:Name="RootGrid"
+                  Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"
+                                   MinHeight="80" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        Padding="16"
+                        Background="AliceBlue"
+                        BorderBrush="Gray"
+                        BorderThickness="1"
+                        CornerRadius="4">
+                    <StackPanel HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                        <TextBlock FontSize="18"
+                                   Foreground="DimGray"
+                                   Text="Main content (Row 0, Height=&quot;*&quot;)" />
+                        <TextBlock Foreground="Gray"
+                                   Text="Expand a panel below and drag the black bar on its top edge; the expander itself changes height and the main content gives way." />
+                    </StackPanel>
+                </Border>
+
+                <StackPanel x:Name="BottomPanels"
+                            Grid.Row="1">
+                    <Expander Header="Panel A">
+                        <Grid x:Name="PanelAContent"
+                              Height="200"
+                              MinHeight="120">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Thumb Grid.Row="0"
+                                   Height="6"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Top"
+                                   Background="Black"
+                                   Cursor="SizeNS"
+                                   DragDelta="ResizeThumb_DragDelta"
+                                   Tag="{Binding ElementName=PanelAContent}" />
+
+                            <Border Grid.Row="1"
+                                    Background="Bisque">
+                                <StackPanel HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Text="Panel A content (MinHeight=120)" />
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Foreground="Gray"
+                                               Text="Drag the black bar above to resize this panel" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Expander>
+
+                    <Expander Header="Panel B">
+                        <Grid x:Name="PanelBContent"
+                              Height="200"
+                              MinHeight="120">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Thumb Grid.Row="0"
+                                   Height="6"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Top"
+                                   Background="Black"
+                                   Cursor="SizeNS"
+                                   DragDelta="ResizeThumb_DragDelta"
+                                   Tag="{Binding ElementName=PanelBContent}" />
+
+                            <Border Grid.Row="1"
+                                    Background="#E2EFDA">
+                                <StackPanel HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Text="Panel B content (MinHeight=120)" />
+                                    <TextBlock HorizontalAlignment="Center"
+                                               Foreground="Gray"
+                                               Text="Drag the black bar above to resize this panel" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </Expander>
+                </StackPanel>
             </Grid>
-        </StackPanel>
-
-        <StackPanel Height="120">
-            <Label Content="GridSplitter that occupies a column" />
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="3*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="7*" />
-                </Grid.ColumnDefinitions>
-                <DockPanel Grid.Column="0"
-                           Height="120"
-                           Background="AliceBlue" />
-                <GridSplitter Grid.Column="1"
-                              Width="3"
-                              HorizontalAlignment="Center"
-                              VerticalAlignment="Stretch"
-                              Panel.ZIndex="99"
-                              Background="Black"
-                              ShowsPreview="False" />
-                <DockPanel Grid.Column="2"
-                           Height="120"
-                           Background="Bisque" />
-            </Grid>
-        </StackPanel>
-
-        <StackPanel Height="120">
-            <Label Content="Try to find the bug in code :)" Foreground="Red" />
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <DockPanel Grid.Column="0"
-                           Height="120"
-                           Background="AliceBlue" />
-                <GridSplitter Grid.Column="1"
-                              Width="3"
-                              HorizontalAlignment="Left"
-                              VerticalAlignment="Stretch"
-                              Panel.ZIndex="99"
-                              Background="Black"
-                              ShowsPreview="False" />
-                <DockPanel Grid.Column="2"
-                           Height="120"
-                           Background="Bisque" />
-            </Grid>
-        </StackPanel>
-    </StackPanel>
+        </TabItem>
+    </TabControl>
 </UserControl>
