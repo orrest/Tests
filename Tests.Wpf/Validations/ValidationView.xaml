@@ -215,6 +215,80 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </GroupBox>
+            <GroupBox Margin="0,20,0,0"
+                      Padding="10"
+                      Header="DataGrid with row-level validation: RowValidationRules + RowValidationErrorTemplate">
+                <StackPanel>
+                    <TextBlock TextWrapping="Wrap">
+                        Edit any cell of a row and commit the row (press Enter or click another row):
+                        the custom rule validates the WHOLE object, so a cross-property violation
+                        (DiscountPrice &gt;= Price) puts a red ! in the row header — hover it for the message.
+                        Fix the value or press ESC to cancel the cell edit and clear the error.
+                    </TextBlock>
+                    <DataGrid Margin="0,8,0,0"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              HeadersVisibility="All"
+                              ItemsSource="{Binding RowItems}"
+                              MinColumnWidth="80"
+                              RowHeaderWidth="40">
+                        <!--
+                            Row-level rules run when the user commits the row, not per cell.
+                            ValidationStep must be UpdatedValue (or CommittedValue): only then the
+                            value passed to Validate is the row's BindingGroup (whole object via
+                            Items[0]) instead of the raw cell string. Also note the error is NOT
+                            shown at load time — row preparation only validates up to
+                            ConvertedProposedValue, so it skips UpdatedValue rules.
+                            行级规则在用户提交行时运行，而非每个单元格。
+                            ValidationStep 必须是 UpdatedValue（或 CommittedValue）：
+                            此时传入 Validate 的 value 才是行 BindingGroup（经 Items[0] 得到整个对象），
+                            而不是原始单元格字符串。另外注意加载时不会显示错误：
+                            行准备阶段的校验只跑到 ConvertedProposedValue，会跳过 UpdatedValue 规则。
+                        -->
+                        <DataGrid.RowValidationRules>
+                            <rules:GridRowValidationRule ValidationStep="UpdatedValue" />
+                        </DataGrid.RowValidationRules>
+                        <!--
+                            Custom feedback in the row header, replacing the default red !.
+                            The BindingGroup reports its errors onto the DataGridRow element itself,
+                            so the ToolTip reads (Validation.Errors)[0] from the ancestor DataGridRow.
+                            自定义行头错误反馈，替代默认红色 !。
+                            BindingGroup 的验证错误挂在 DataGridRow 元素上，
+                            故 ToolTip 通过祖先 DataGridRow 读取 (Validation.Errors)[0]。
+                        -->
+                        <DataGrid.RowValidationErrorTemplate>
+                            <ControlTemplate>
+                                <Grid Margin="0,-2,0,-2"
+                                      ToolTip="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridRow}}, Path=(Validation.Errors)[0].ErrorContent}">
+                                    <Ellipse Width="{TemplateBinding FontSize}"
+                                             Height="{TemplateBinding FontSize}"
+                                             Fill="Red"
+                                             StrokeThickness="0" />
+                                    <TextBlock HorizontalAlignment="Center"
+                                               FontSize="{TemplateBinding FontSize}"
+                                               FontWeight="Bold"
+                                               Foreground="White"
+                                               Text="!" />
+                                </Grid>
+                            </ControlTemplate>
+                        </DataGrid.RowValidationErrorTemplate>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="*"
+                                                Binding="{Binding Name}"
+                                                Header="Name" />
+
+                            <DataGridTextColumn Width="80"
+                                                Binding="{Binding Price}"
+                                                Header="Price" />
+
+                            <DataGridTextColumn Width="100"
+                                                Binding="{Binding DiscountPrice}"
+                                                Header="DiscountPrice" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </GroupBox>
         </StackPanel>
     </ScrollViewer>
 
