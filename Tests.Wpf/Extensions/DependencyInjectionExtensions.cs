@@ -13,6 +13,7 @@ using Tests.Wpf.ProgressMask;
 using Tests.Wpf.SelectedItem;
 using Tests.Wpf.Skottie;
 using Tests.Wpf.Snackbar;
+using Tests.Wpf.StatePattern;
 using Tests.Wpf.TabLifecycle;
 using Tests.Wpf.TabLifecycle.DirectBinding;
 using Tests.Wpf.TabLifecycle.MarkupResolved;
@@ -53,6 +54,7 @@ public static class DependencyInjectionExtensions
                 sc.AddSingletonForNavigation(typeof(TreeView), typeof(TreeViewModel));
                 sc.AddSingletonForNavigation(typeof(SelectedItemView), typeof(SelectedItemViewModel));
                 sc.AddSingletonForNavigation(typeof(SkottieView), typeof(SkottieViewModel));
+                sc.AddSingletonForNavigation(typeof(StatePatternView), typeof(StatePatternViewModel));
 
                 // Tab lifecycle demo: the page and all nested views/viewmodels are transient,
                 // so re-entering the page creates a fresh instance graph and the old one can be collected.
