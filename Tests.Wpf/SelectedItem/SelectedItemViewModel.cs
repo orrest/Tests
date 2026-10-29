@@ -58,9 +58,11 @@ public partial class SelectedItemViewModel : ObservableObject
         SelectedCellCount = grid.SelectedCells.Count;
         var items = grid.SelectedItems.Cast<object>().Select(static item => item.ToString());
         SelectedItemsText = grid.SelectedItems.Count == 0 ? "-" : $"({grid.SelectedItems.Count}) {string.Join(", ", items)}";
+        var cells = grid.SelectedCells.Select(static info => $"{info.Item} @ {info.Column?.Header ?? "-"}");
+        var selectedCellsText = grid.SelectedCells.Count == 0 ? "-" : $"({grid.SelectedCells.Count}) {string.Join(", ", cells)}";
         var cell = grid.CurrentCell;
         CurrentCellText = cell.IsValid ? $"{cell.Item} @ {cell.Column?.Header ?? "-"}" : "-";
-        Log($"rows={grid.SelectedItems.Count}, cells={SelectedCellCount}, selectedItem={grid.SelectedItem ?? "(null)"}, selectedIndex={grid.SelectedIndex}");
+        Log($"selectedItems={SelectedItemsText}, selectedCells={selectedCellsText}, selectedItem={grid.SelectedItem ?? "(null)"}, selectedIndex={grid.SelectedIndex}");
     }
 
     public void Log(string message)
